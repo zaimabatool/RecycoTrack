@@ -1,11 +1,72 @@
-import React from 'react'
-
+import React from "react";
+import logo from "./../assets/assets/images/recycle.png";
 function Navbar() {
   return (
     <div>
-      
+      <div className="w-full h-auto p-1 relative">
+        <div className="max-w-[1280px] w-full h-[70px] flex items-center justify-between mx-auto px-3">
+          {/* Logo Section */}
+          <div className="flex items-center gap-2">
+            <img
+              src={logo}
+              alt="RecycoTrack Logo"
+              className="w-10 h-10 object-contain"
+            />
+            <div>
+              <p className="font-bold font-[Verdana] text-[#082b5c] text-xl">
+                RecycoTrack
+              </p>
+              <p className="font-[Arial] text-teal-800 text-sm">
+                Smart Scrap Selling
+              </p>
+            </div>
+          </div>
+
+          {/* Navigation (Desktop) */}
+          <div className="flex gap-8 items-center w-[60%]">
+            <div className="flex w-[80%] items-center justify-around px-1 transition-all duration-200">
+              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+                Home
+              </a>
+              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+                Rate List
+              </a>
+              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+                How It Work
+              </a>
+              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+                About Us
+              </a>
+              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+                Contact Us
+              </a>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex items-center gap-2">
+              <button
+                // onClick={() => navigate("/login")}
+                className="h-10 w-[70px] rounded-lg bg-transparent hover:bg-[#025952] hover:text-white transition-all duration-200"
+              >
+                Login
+              </button>
+
+              <button
+                // onClick={() => navigate("/signup")}
+                className="h-10 w-[70px] rounded-lg bg-[#0e9d90] text-white hover:bg-[#025952] transition-all duration-200"
+              >
+                SignUp
+              </button>
+            </div>
+
+            {/* Menu Icon (mobile) */}
+            <i className="fa-solid fa-list hidden"></i>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+    
+  );
 }
 
-export default Navbar
+export default Navbar;
