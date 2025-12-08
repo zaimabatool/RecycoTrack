@@ -5,6 +5,14 @@ import MaterialCard from "../components/MaterialCard";
 import Footer from "../components/Footer";
 import logo from "./../assets/assets/images/heroleft.jpg";
 import InfoCard from "../components/InfoCard";
+import { FaRecycle } from "react-icons/fa";
+import { RiFilePaperLine } from "react-icons/ri";
+import { GiMetalScales } from "react-icons/gi";
+import { BsLaptop } from "react-icons/bs";
+import { IoCloudUploadOutline } from "react-icons/io5";
+import { FaTrain } from "react-icons/fa";
+import { FaRegCalendarCheck } from "react-icons/fa";
+import { FaRupeeSign } from "react-icons/fa6";
 function Home() {
   return (
     <div>
@@ -45,36 +53,45 @@ function Home() {
         </div>
       </div>
 
-      <InfoCard/>
+      <InfoCard />
+      <div className="w-full ">
+        <div className="max-w-[1280px] w-full flex flex-col items-center mx-auto">
+          <h2 className="text-3xl font-verdana font-bold">
+            Accepted Materials
+          </h2>
 
-      <h2 className="text-3xl mb-2 flex items-center justify-center font-verdana font-bold p-[10px]">
-        Accepted Materials
-      </h2>
+          <p className="">
+            We accept a wide range of recyclable materials. Check what you can sell
+            to us.
+          </p>
 
-      <p className=" mb-6 flex items-center justify-center">
-        We accept a wide range of recyclable materials. Check what you can sell
-        to us.
-      </p>
+          <div className="flex">
+            <MaterialCard name={"Plastic"} icons={<FaRecycle/>} des={"Take clear photos of your scrap materials and upload them to our plateform"} clr={"bg-blue-400"}/>
+            <MaterialCard name={"Paper & CardBoard"} icons={<RiFilePaperLine/>} des={"Our AI instantly analyzes and identifies the material type and acceptance status"} clr={"bg-purple-400"}/>
+            <MaterialCard name={"Metal"} icons={<FaRegCalendarCheck />} des={"Choose convenient pickup service"} clr={"bg-teal-400"}/>
+            <MaterialCard name={"E-Waste"} icons={<FaRupeeSign />} des={"Get accurate weighting andInstant payment via cash or JazzCash"} clr={"bg-green-400"}/>
+          </div>
+        </div>
 
-      <div className="flex">
-        <MaterialCard />
-        <MaterialCard />
-        <MaterialCard />
-        <MaterialCard />
       </div>
-      <h2 className="text-3xl mb-2 font-[Verdana] flex items-center justify-center font-bold ">
-        How It Works
-      </h2>
+      <div className="w-full">
+        <div className="w-full max-w-[1280px] bg-white flex flex-col items-center mx-auto">
+          <h2 className="text-3xl font-[Verdana] font-bold ">
+            How It Works
+          </h2>
 
-      <p className="mb-6 flex items-center justify-center ">
-        Four simple steps to turn your scrap into cash
-      </p>
-      <div className="flex">
-        <WorkCard />
-        <WorkCard />
-        <WorkCard />
-        <WorkCard />
+          <p className="">
+            Four simple steps to turn your scrap into cash
+          </p>
+          <div className="flex gap-[10px]">
+            <WorkCard names={"Upload Photo"} icon={<IoCloudUploadOutline />} desc={"Pet, HDPE, PVC bottles & containers"} clrs={"bg-blue-500"}/>
+            <WorkCard names={"AI Checks"} icon={<FaTrain />} desc={"Newspapers, magazines, boxes"} clrs={"bg-orange-600"}/>
+            <WorkCard names={"Book Pickup"} icon={<GiMetalScales/>} desc={"Aluminum, copper, steel iron"} clrs={"bg-gray-500"}/>
+            <WorkCard names={"Weight & Payment"} icon={<BsLaptop/>} desc={"Electronics, circuit boards, wires"} clrs={"bg-purple-500"}/>
+          </div>
+        </div>
       </div>
+
       <Footer />
 
       <div></div>
