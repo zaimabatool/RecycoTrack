@@ -1,11 +1,14 @@
 import React from 'react'
+// import Navbar from './components/Navbar'
+import InfoCard from '../components/InfoCard'
 
 function Home() {
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
+      
       <div>
-
+    <InfoCard/>
       </div>
 
       <div>
