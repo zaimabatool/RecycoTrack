@@ -1,13 +1,24 @@
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
 import logo from "./../assets/assets/images/recycle.png";
+
 function Navbar() {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    setIsMenuOpen(false);
+  };
+
   return (
-    <div>
-      <div className="w-full p-1 fixed">
-        <div className="max-w-[1280px] w-full h-[70px] flex items-center justify-between mx-auto px-3 bg-white">
+    <div className="relative z-50">
+      <div className="w-full p-1 fixed top-0 left-0 bg-white shadow-sm">
+        <div className="max-w-[1280px] w-full h-[70px] flex items-center justify-between mx-auto px-4">
+
           {/* Logo Section */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleNavigate('/')}>
             <img
               src={logo}
               alt="RecycoTrack Logo"
@@ -23,50 +34,92 @@ function Navbar() {
             </div>
           </div>
 
-          {/* Navigation (Desktop) */}
-          <div className="flex gap-8 items-center w-[60%]">
-            <div className="flex w-[80%] items-center justify-around px-1 transition-all duration-200">
-              <button onClick={() => navigate('/')} className="text-[#082b5c] hover:text-[#0CAEA0] bg-transparent border-none cursor-pointer">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex gap-8 items-center">
+            <div className="flex items-center gap-6">
+              <button onClick={() => navigate('/')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
                 Home
               </button>
-              <button onClick={() => navigate('/rate-list')} className="text-[#082b5c] hover:text-[#0CAEA0] bg-transparent border-none cursor-pointer">
+              <button onClick={() => navigate('/rate-list')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
                 Rate List
               </button>
-              <button onClick={() => navigate('/coming-soon')} className="text-[#082b5c] hover:text-[#0CAEA0] bg-transparent border-none cursor-pointer">
+              <button onClick={() => navigate('/coming-soon')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
                 How It Work
               </button>
-              <button onClick={() => navigate('/about-us')} className="text-[#082b5c] hover:text-[#0CAEA0] bg-transparent border-none cursor-pointer">
+              <button onClick={() => navigate('/about-us')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
                 About Us
               </button>
-              <button onClick={() => navigate('/coming-soon')} className="text-[#082b5c] hover:text-[#0CAEA0] bg-transparent border-none cursor-pointer">
+              <button onClick={() => navigate('/coming-soon')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
                 Contact Us
               </button>
             </div>
 
-            {/* Buttons */}
-            <div className="flex items-center gap-2">
+            {/* Desktop Buttons */}
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate("/login")}
-                className="h-10 w-[70px] rounded-lg bg-transparent hover:bg-[#025952] hover:text-white transition-all duration-200"
+                className="px-4 py-2 rounded-lg text-[#082b5c] hover:bg-gray-100 transition-all font-medium"
               >
                 Login
               </button>
 
               <button
                 onClick={() => navigate("/signup")}
-                className="h-10 w-[70px] rounded-lg bg-[#0e9d90] text-white hover:bg-[#025952] transition-all duration-200"
+                className="px-4 py-2 rounded-lg bg-[#0e9d90] text-white hover:bg-[#025952] transition-all font-medium shadow-md hover:shadow-lg"
               >
                 SignUp
               </button>
             </div>
-
-            {/* Menu Icon (mobile) */}
-            <i className="fa-solid fa-list hidden"></i>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-[#082b5c] text-2xl focus:outline-none"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
       </div>
-    </div>
 
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 top-[70px] bg-white z-40 md:hidden flex flex-col p-6 shadow-xl animate-in slide-in-from-top-10 duration-200">
+          <div className="flex flex-col gap-4 text-center">
+            <button onClick={() => handleNavigate('/')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+              Home
+            </button>
+            <button onClick={() => handleNavigate('/rate-list')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+              Rate List
+            </button>
+            <button onClick={() => handleNavigate('/coming-soon')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+              How It Work
+            </button>
+            <button onClick={() => handleNavigate('/about-us')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+              About Us
+            </button>
+            <button onClick={() => handleNavigate('/coming-soon')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+              Contact Us
+            </button>
+
+            <div className="flex flex-col gap-3 mt-4">
+              <button
+                onClick={() => handleNavigate("/login")}
+                className="w-full py-3 rounded-lg border border-[#082b5c] text-[#082b5c] font-bold hover:bg-gray-50"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => handleNavigate("/signup")}
+                className="w-full py-3 rounded-lg bg-[#0e9d90] text-white font-bold hover:bg-[#025952] shadow-md"
+              >
+                SignUp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
