@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import WorkCard from "../components/WorkCard";
 import MaterialCard from "../components/MaterialCard";
@@ -14,6 +15,7 @@ import { FaTrain } from "react-icons/fa";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { FaRupeeSign } from "react-icons/fa6";
 function Home() {
+  const navigate = useNavigate();
   return (
     <div>
       <Navbar />
@@ -32,11 +34,17 @@ function Home() {
             </p>
 
             <div className="w-[60%] sm:w-full flex items-center justify-start gap-5 flex-col sm:flex-row md:flex-row">
-              <button className="w-[250px] p-2 rounded bg-white text-[#0e9d90] hover:bg-[#025952] hover:text-white hover:shadow-lg transition-all">
+              <button
+                onClick={() => navigate('/coming-soon')}
+                className="w-[250px] p-2 rounded bg-white text-[#0e9d90] hover:bg-[#025952] hover:text-white hover:shadow-lg transition-all"
+              >
                 Upload Scrap Now
               </button>
 
-              <button className="w-[250px] p-2 rounded border border-white text-white bg-transparent hover:bg-[#025952] hover:text-white hover:border-transparent hover:shadow-lg transition-all">
+              <button
+                onClick={() => navigate('/rate-list')}
+                className="w-[250px] p-2 rounded border border-white text-white bg-transparent hover:bg-[#025952] hover:text-white hover:border-transparent hover:shadow-lg transition-all"
+              >
                 View Todays Rate
               </button>
             </div>
@@ -66,10 +74,10 @@ function Home() {
           </p>
 
           <div className="flex">
-            <MaterialCard name={"Plastic"} icons={<FaRecycle/>} des={"Take clear photos of your scrap materials and upload them to our plateform"} clr={"bg-blue-400"}/>
-            <MaterialCard name={"Paper & CardBoard"} icons={<RiFilePaperLine/>} des={"Our AI instantly analyzes and identifies the material type and acceptance status"} clr={"bg-purple-400"}/>
-            <MaterialCard name={"Metal"} icons={<FaRegCalendarCheck />} des={"Choose convenient pickup service"} clr={"bg-teal-400"}/>
-            <MaterialCard name={"E-Waste"} icons={<FaRupeeSign />} des={"Get accurate weighting andInstant payment via cash or JazzCash"} clr={"bg-green-400"}/>
+            <MaterialCard name={"Plastic"} icons={<FaRecycle />} des={"Take clear photos of your scrap materials and upload them to our plateform"} clr={"bg-blue-400"} />
+            <MaterialCard name={"Paper & CardBoard"} icons={<RiFilePaperLine />} des={"Our AI instantly analyzes and identifies the material type and acceptance status"} clr={"bg-purple-400"} />
+            <MaterialCard name={"Metal"} icons={<FaRegCalendarCheck />} des={"Choose convenient pickup service"} clr={"bg-teal-400"} />
+            <MaterialCard name={"E-Waste"} icons={<FaRupeeSign />} des={"Get accurate weighting andInstant payment via cash or JazzCash"} clr={"bg-green-400"} />
           </div>
         </div>
 
@@ -84,10 +92,10 @@ function Home() {
             Four simple steps to turn your scrap into cash
           </p>
           <div className="flex gap-[10px]">
-            <WorkCard names={"Upload Photo"} icon={<IoCloudUploadOutline />} desc={"Pet, HDPE, PVC bottles & containers"} clrs={"bg-blue-500"}/>
-            <WorkCard names={"AI Checks"} icon={<FaTrain />} desc={"Newspapers, magazines, boxes"} clrs={"bg-orange-600"}/>
-            <WorkCard names={"Book Pickup"} icon={<GiMetalScales/>} desc={"Aluminum, copper, steel iron"} clrs={"bg-gray-500"}/>
-            <WorkCard names={"Weight & Payment"} icon={<BsLaptop/>} desc={"Electronics, circuit boards, wires"} clrs={"bg-purple-500"}/>
+            <WorkCard names={"Upload Photo"} icon={<IoCloudUploadOutline />} desc={"Pet, HDPE, PVC bottles & containers"} clrs={"bg-blue-500"} />
+            <WorkCard names={"AI Checks"} icon={<FaTrain />} desc={"Newspapers, magazines, boxes"} clrs={"bg-orange-600"} />
+            <WorkCard names={"Book Pickup"} icon={<GiMetalScales />} desc={"Aluminum, copper, steel iron"} clrs={"bg-gray-500"} />
+            <WorkCard names={"Weight & Payment"} icon={<BsLaptop />} desc={"Electronics, circuit boards, wires"} clrs={"bg-purple-500"} />
           </div>
         </div>
       </div>

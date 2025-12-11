@@ -4,6 +4,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import NotFound from './pages/NotFound';
+import ComingSoon from './pages/ComingSoon';
+import RateList from './pages/RateList';
+import AboutUs from './pages/AboutUs';
 import Loader from './components/Loader';
 
 function App() {
@@ -26,6 +29,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/coming-soon" element={<ComingSoon />} />
+        <Route path="/rate-list" element={<RateList />} />
+        <Route path="/about-us" element={<AboutUs />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
