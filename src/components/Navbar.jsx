@@ -1,10 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "./../assets/assets/images/recycle.png";
 function Navbar() {
+  const navigate = useNavigate();
   return (
     <div>
-      <div className="w-full h-auto p-1 relative">
-        <div className="max-w-[1280px] w-full h-[70px] flex items-center justify-between mx-auto px-3">
+      <div className="w-full p-1 fixed">
+        <div className="max-w-[1280px] w-full h-[70px] flex items-center justify-between mx-auto px-3 bg-white">
           {/* Logo Section */}
           <div className="flex items-center gap-2">
             <img
@@ -25,19 +27,19 @@ function Navbar() {
           {/* Navigation (Desktop) */}
           <div className="flex gap-8 items-center w-[60%]">
             <div className="flex w-[80%] items-center justify-around px-1 transition-all duration-200">
-              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+              <a href="#" className="text-[#082b5c] hover:text-[#025952]">
                 Home
               </a>
-              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+              <a href="#" className="text-[#082b5c] hover:text-[#025952]">
                 Rate List
               </a>
-              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+              <a href="#" className="text-[#082b5c] hover:text-[#025952]">
                 How It Work
               </a>
-              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+              <a href="#" className="text-[#082b5c] hover:text-[#025952]">
                 About Us
               </a>
-              <a href="#" className="text-[#082b5c] hover:text-[#0CAEA0]">
+              <a href="#" className="text-[#082b5c] hover:text-[#025952]">
                 Contact Us
               </a>
             </div>
@@ -45,14 +47,14 @@ function Navbar() {
             {/* Buttons */}
             <div className="flex items-center gap-2">
               <button
-                // onClick={() => navigate("/login")}
+                onClick={() => navigate("/login")}
                 className="h-10 w-[70px] rounded-lg bg-transparent hover:bg-[#025952] hover:text-white transition-all duration-200"
               >
                 Login
               </button>
 
               <button
-                // onClick={() => navigate("/signup")}
+                onClick={() => navigate("/signup")}
                 className="h-10 w-[70px] rounded-lg bg-[#0e9d90] text-white hover:bg-[#025952] transition-all duration-200"
               >
                 SignUp
@@ -65,7 +67,7 @@ function Navbar() {
         </div>
       </div>
     </div>
-    
+
   );
 }
 
