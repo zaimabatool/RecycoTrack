@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import WorkCard from "../components/WorkCard";
 import MaterialCard from "../components/MaterialCard";
 import Footer from "../components/Footer";
-import logo from "./../assets/assets/images/heroleft.jpg";
+import heroImg from "./../assets/assets/images/heroleft.jpg";
 import InfoCard from "../components/InfoCard";
 import { FaRecycle } from "react-icons/fa";
 import { RiFilePaperLine } from "react-icons/ri";
@@ -14,47 +14,70 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { FaTrain } from "react-icons/fa";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { FaRupeeSign } from "react-icons/fa6";
+
 function Home() {
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="bg-gray-50 min-h-screen">
       <Navbar />
-      <div className="w-full bg-[#0e9d90]">
-        <div className="max-w-[1280px] mx-auto flex items-center justify-center py-5 px-2 flex-col md:flex-row">
-          {/* Right Side */}
-          <div className="w-full md:w-1/2 h-[500px] text-white flex flex-col items-start justify-center gap-8">
-            <h1 className="font-bold text-[32px] w-[60%] md:w-[60%] sm:w-[80%]">
-              Sell Your Scrap Smarter with RecycoTrack
+
+      {/* Hero Section */}
+      <div className="relative pt-[70px] bg-gradient-to-br from-[#e6f7f6] to-white overflow-hidden">
+        {/* Background Decorative Elements */}
+        <div className="absolute top-20 right-0 w-64 h-64 bg-[#0e9d90] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div className="absolute top-40 right-40 w-64 h-64 bg-[#082b5c] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+
+        <div className="max-w-[1280px] mx-auto px-4 py-12 md:py-20 flex flex-col-reverse md:flex-row items-center justify-between gap-10">
+
+          {/* Left Side (Text) */}
+          <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-6 z-10">
+            <div className="inline-block px-4 py-1 rounded-full bg-[#0e9d90]/10 text-[#0e9d90] font-semibold text-sm mb-2">
+              ♻️ Smart Scrap Selling in Sahiwal
+            </div>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#082b5c] leading-tight">
+              Turn Your <span className="text-[#0e9d90]">Scrap</span> <br /> Into <span className="text-[#0e9d90]">Cash!</span>
             </h1>
 
-            <p className="w-[60%] md:w-[60%] sm:w-[80%]">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere
-              debitis id, labore minus atque obcaecati recusandae magni optio
-              voluptate eligendi.
+            <p className="text-gray-600 text-lg md:text-xl max-w-lg leading-relaxed">
+              The smartest way to recycle. Get the best rates, instant pickup, and contribute to a greener planet with RecycoTrack.
             </p>
 
-            <div className="w-[60%] sm:w-full flex items-center justify-start gap-5 flex-col sm:flex-row md:flex-row">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-4">
               <button
                 onClick={() => navigate('/coming-soon')}
-                className="w-[250px] p-2 rounded bg-white text-[#0e9d90] hover:bg-[#025952] hover:text-white hover:shadow-lg transition-all"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#0e9d90] text-white font-bold text-lg shadow-lg hover:bg-[#025952] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 Upload Scrap Now
               </button>
 
               <button
                 onClick={() => navigate('/rate-list')}
-                className="w-[250px] p-2 rounded border border-white text-white bg-transparent hover:bg-[#025952] hover:text-white hover:border-transparent hover:shadow-lg transition-all"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl border-2 border-[#082b5c] text-[#082b5c] font-bold text-lg hover:bg-[#082b5c] hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
-                View Todays Rate
+                View Today's Rates
               </button>
             </div>
+
+            <div className="flex items-center gap-6 pt-4 text-sm text-gray-500 font-medium">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span> Instant Payment
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span> Free Pickup
+              </div>
+            </div>
           </div>
-          <div className="w-full h-[500px] flex items-center justify-center">
-            <div className="bg-cover bg-center rounded-2xl">
+
+          {/* Right Side (Image) */}
+          <div className="w-full md:w-1/2 flex justify-center items-center relative z-10">
+            <div className="relative w-full max-w-md aspect-square">
+              <div className="absolute inset-0 bg-[#0e9d90] rounded-full opacity-10 animate-pulse"></div>
               <img
-                src={logo}
-                alt="RecycoTrack Logo"
-                className="w-[300px] h-[400px] object-contain"
+                src={heroImg}
+                alt="Recycling Illustration"
+                className="relative w-full h-full object-cover rounded-3xl shadow-2xl transform hover:scale-105 transition-transform duration-500"
+                style={{ borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%' }}
               />
             </div>
           </div>
@@ -62,48 +85,48 @@ function Home() {
       </div>
 
       <InfoCard />
-      <div className="w-full ">
-        <div className="max-w-[1280px] w-full flex flex-col items-center mx-auto">
-          <h2 className="text-3xl font-verdana font-bold">
+
+      {/* Accepted Materials Section */}
+      <div className="w-full py-16 bg-white">
+        <div className="max-w-[1280px] w-full flex flex-col items-center mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#082b5c] mb-4 text-center">
             Accepted Materials
           </h2>
 
-          <p className="">
-            We accept a wide range of recyclable materials. Check what you can sell
-            to us.
+          <p className="text-gray-600 text-center max-w-2xl mb-12 text-lg">
+            We accept a wide range of recyclable materials. Check what you can sell to us.
           </p>
 
-          <div className="flex">
-            <MaterialCard name={"Plastic"} icons={<FaRecycle />} des={"Take clear photos of your scrap materials and upload them to our plateform"} clr={"bg-blue-400"} />
-            <MaterialCard name={"Paper & CardBoard"} icons={<RiFilePaperLine />} des={"Our AI instantly analyzes and identifies the material type and acceptance status"} clr={"bg-purple-400"} />
-            <MaterialCard name={"Metal"} icons={<FaRegCalendarCheck />} des={"Choose convenient pickup service"} clr={"bg-teal-400"} />
-            <MaterialCard name={"E-Waste"} icons={<FaRupeeSign />} des={"Get accurate weighting andInstant payment via cash or JazzCash"} clr={"bg-green-400"} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            <MaterialCard name={"Plastic"} icons={<FaRecycle />} des={"Take clear photos of your scrap materials and upload them to our plateform"} clr={"bg-blue-500"} />
+            <MaterialCard name={"Paper & CardBoard"} icons={<RiFilePaperLine />} des={"Our AI instantly analyzes and identifies the material type and acceptance status"} clr={"bg-purple-500"} />
+            <MaterialCard name={"Metal"} icons={<FaRegCalendarCheck />} des={"Choose convenient pickup service"} clr={"bg-teal-500"} />
+            <MaterialCard name={"E-Waste"} icons={<FaRupeeSign />} des={"Get accurate weighting andInstant payment via cash or JazzCash"} clr={"bg-green-500"} />
           </div>
         </div>
-
       </div>
-      <div className="w-full">
-        <div className="w-full max-w-[1280px] bg-white flex flex-col items-center mx-auto">
-          <h2 className="text-3xl font-[Verdana] font-bold ">
+
+      {/* How It Works Section */}
+      <div className="w-full py-16 bg-gray-50">
+        <div className="w-full max-w-[1280px] flex flex-col items-center mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#082b5c] mb-4 text-center">
             How It Works
           </h2>
 
-          <p className="">
+          <p className="text-gray-600 text-center max-w-2xl mb-12 text-lg">
             Four simple steps to turn your scrap into cash
           </p>
-          <div className="flex gap-[10px]">
-            <WorkCard names={"Upload Photo"} icon={<IoCloudUploadOutline />} desc={"Pet, HDPE, PVC bottles & containers"} clrs={"bg-blue-500"} />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            <WorkCard names={"Upload Photo"} icon={<IoCloudUploadOutline />} desc={"Pet, HDPE, PVC bottles & containers"} clrs={"bg-blue-600"} />
             <WorkCard names={"AI Checks"} icon={<FaTrain />} desc={"Newspapers, magazines, boxes"} clrs={"bg-orange-600"} />
-            <WorkCard names={"Book Pickup"} icon={<GiMetalScales />} desc={"Aluminum, copper, steel iron"} clrs={"bg-gray-500"} />
-            <WorkCard names={"Weight & Payment"} icon={<BsLaptop />} desc={"Electronics, circuit boards, wires"} clrs={"bg-purple-500"} />
+            <WorkCard names={"Book Pickup"} icon={<GiMetalScales />} desc={"Aluminum, copper, steel iron"} clrs={"bg-gray-600"} />
+            <WorkCard names={"Weight & Payment"} icon={<BsLaptop />} desc={"Electronics, circuit boards, wires"} clrs={"bg-purple-600"} />
           </div>
         </div>
       </div>
 
       <Footer />
-
-      <div></div>
-      <div></div>
     </div>
   );
 }
