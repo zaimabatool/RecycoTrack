@@ -3,11 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useData } from '../context/DataContext';
-import { FaBoxOpen, FaCheckCircle, FaClock, FaTimesCircle, FaTruck } from 'react-icons/fa';
+import { FaBoxOpen, FaCheckCircle, FaClock, FaTimesCircle, FaTruck, FaExclamationTriangle } from 'react-icons/fa';
 
 const UserOrders = () => {
     const navigate = useNavigate();
-    const { orders, currentUser } = useData();
+    const { orders, currentUser, updateOrderStatus } = useData();
+
+    const handleAcceptProposal = (orderId) => {
+        updateOrderStatus(orderId, 'Price Accepted');
+    };
+
+    const handleRejectProposal = (orderId) => {
+        updateOrderStatus(orderId, 'Price Rejected');
+    };
 
     // Redirect if not logged in
     React.useEffect(() => {
@@ -69,7 +77,7 @@ const UserOrders = () => {
                                     {/* Status & Amount */}
                                     <div className="flex flex-col items-end justify-center gap-2">
                                         <div className="text-2xl font-bold text-primary">
-                                            {order.amount} PKR
+                                            {order.status === 'Price Proposed' ? order.finalPrice : order.amount} PKR
                                         </div>
                                         <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${order.status === 'Completed' ? 'bg-green-100 text-green-700' :
                                             order.status === 'Scheduled' ? 'bg-blue-100 text-blue-700' :
@@ -80,6 +88,8 @@ const UserOrders = () => {
                                             {order.status === 'Scheduled' && <FaTruck />}
                                             {order.status === 'Pending' && <FaClock />}
                                             {order.status === 'Cancelled' && <FaTimesCircle />}
+                                            {order.status === 'Price Proposed' && <FaExclamationTriangle />}
+                                            {order.status === 'Price Rejected' && <FaTimesCircle />}
                                             {order.status}
                                         </div>
                                     </div>
@@ -95,6 +105,55 @@ const UserOrders = () => {
                                             }`}
                                     ></div>
                                 </div>
+
+                                {/* Price Proposal Alert */}
+                                {order.status === 'Price Proposed' && (
+                                    <div className="bg-orange-50 border-t border-orange-100 p-4 animate-in fade-in slide-in-from-top-2">
+                                        <div className="flex items-start gap-3">
+                                            <div className="bg-orange-100 p-2 rounded-full">
+                                                <FaExclamationTriangle className="text-orange-600 text-lg" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="font-bold text-orange-900">New Price Proposal</h4>
+                                                <p className="text-sm text-orange-800 mb-3">
+                                                    The rider has updated the weight/price after inspection. Please review the new offer.
+                                                </p>
+
+                                                <div className="flex flex-wrap gap-6 mb-4 bg-white/50 p-3 rounded-lg border border-orange-100">
+                                                    <div>
+                                                        <span className="text-gray-500 text-xs uppercase font-bold">Original Price</span>
+                                                        <p className="font-medium line-through text-gray-400">{order.originalPrice || order.amount} PKR</p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-gray-500 text-xs uppercase font-bold">New Offer</span>
+                                                        <p className="font-bold text-green-600 text-xl">{order.finalPrice} PKR</p>
+                                                    </div>
+                                                    {order.finalWeight && (
+                                                        <div>
+                                                            <span className="text-gray-500 text-xs uppercase font-bold">New Weight</span>
+                                                            <p className="font-bold text-gray-700">{order.finalWeight} kg</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex gap-3">
+                                                    <button
+                                                        onClick={() => handleAcceptProposal(order.id)}
+                                                        className="bg-green-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-green-700 shadow-md shadow-green-600/20 transition-all"
+                                                    >
+                                                        Accept Offer
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleRejectProposal(order.id)}
+                                                        className="bg-white text-red-600 border border-red-200 px-5 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition-all"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ))
                     ) : (
