@@ -77,6 +77,24 @@ export const DataProvider = ({ children }) => {
         }
     }, [currentUser]);
 
+    // Real-time Sync across tabs
+    useEffect(() => {
+        const handleStorageChange = (e) => {
+            if (e.key === 'rates') {
+                setRates(JSON.parse(e.newValue));
+            } else if (e.key === 'orders') {
+                setOrders(JSON.parse(e.newValue));
+            } else if (e.key === 'history') {
+                setHistory(JSON.parse(e.newValue));
+            } else if (e.key === 'users') {
+                setUsers(JSON.parse(e.newValue));
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
+
     // Actions
     const addRate = (newRate) => {
         setRates([...rates, { ...newRate, id: Date.now() }]);
