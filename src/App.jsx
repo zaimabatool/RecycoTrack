@@ -6,7 +6,9 @@ import Signup from './pages/Signup';
 import NotFound from './pages/NotFound';
 import ComingSoon from './pages/ComingSoon';
 import RateList from './pages/RateList';
+
 import AboutUs from './pages/AboutUs';
+import Contact from './pages/Contact';
 import Loader from './components/Loader';
 
 function App() {
@@ -32,6 +34,7 @@ function App() {
         <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="/rate-list" element={<RateList />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/contact-us" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

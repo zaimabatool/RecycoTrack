@@ -49,7 +49,7 @@ function Navbar() {
               <button onClick={() => navigate('/about-us')} className="text-secondary hover:text-accent font-medium transition-colors">
                 About Us
               </button>
-              <button onClick={() => navigate('/coming-soon')} className="text-secondary hover:text-accent font-medium transition-colors">
+              <button onClick={() => navigate('/contact-us')} className="text-secondary hover:text-accent font-medium transition-colors">
                 Contact Us
               </button>
             </div>
@@ -98,7 +98,7 @@ function Navbar() {
             <button onClick={() => handleNavigate('/about-us')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
               About Us
             </button>
-            <button onClick={() => handleNavigate('/coming-soon')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
+            <button onClick={() => handleNavigate('/contact-us')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
               Contact Us
             </button>
 
