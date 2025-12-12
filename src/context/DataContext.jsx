@@ -20,6 +20,12 @@ export const DataProvider = ({ children }) => {
         { id: 11, material: 'CPU Processor', category: 'E-Waste', unit: 'pc', price: 250, trend: 'stable', iconType: 'BsCpu', iconColor: 'text-blue-600' },
     ];
 
+    // Dummy Users
+    const initialUsers = [
+        { id: 1, name: 'Ali Khan', email: 'user@test.com', password: '123', phone: '03001234567' },
+        { id: 2, name: 'Admin User', email: 'admin@recycotrack.com', password: 'admin', role: 'admin' }
+    ];
+
     // Load from LocalStorage or use initial
     const [rates, setRates] = useState(() => {
         const savedRates = localStorage.getItem('rates');
@@ -36,6 +42,16 @@ export const DataProvider = ({ children }) => {
         return savedHistory ? JSON.parse(savedHistory) : [];
     });
 
+    const [users, setUsers] = useState(() => {
+        const savedUsers = localStorage.getItem('users');
+        return savedUsers ? JSON.parse(savedUsers) : initialUsers;
+    });
+
+    const [currentUser, setCurrentUser] = useState(() => {
+        const savedUser = localStorage.getItem('currentUser');
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
+
     // Save to LocalStorage whenever state changes
     useEffect(() => {
         localStorage.setItem('rates', JSON.stringify(rates));
@@ -48,6 +64,18 @@ export const DataProvider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem('history', JSON.stringify(history));
     }, [history]);
+
+    useEffect(() => {
+        localStorage.setItem('users', JSON.stringify(users));
+    }, [users]);
+
+    useEffect(() => {
+        if (currentUser) {
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        } else {
+            localStorage.removeItem('currentUser');
+        }
+    }, [currentUser]);
 
     // Actions
     const addRate = (newRate) => {
@@ -66,15 +94,40 @@ export const DataProvider = ({ children }) => {
         setOrders([...orders, { ...order, id: Date.now(), status: 'Pending', date: new Date().toISOString() }]);
     };
 
-    const updateOrderStatus = (id, status) => {
-        setOrders(orders.map(order => order.id === id ? { ...order, status } : order));
+    const updateOrderStatus = (id, status, updates = {}) => {
+        setOrders(orders.map(order => order.id === id ? { ...order, status, ...updates } : order));
+    };
+
+    // Auth Actions
+    const login = (email, password) => {
+        const user = users.find(u => u.email === email && u.password === password);
+        if (user) {
+            setCurrentUser(user);
+            return { success: true, user };
+        }
+        return { success: false, message: 'Invalid email or password' };
+    };
+
+    const logout = () => {
+        setCurrentUser(null);
+    };
+
+    const register = (newUser) => {
+        if (users.find(u => u.email === newUser.email)) {
+            return { success: false, message: 'Email already exists' };
+        }
+        const user = { ...newUser, id: Date.now() };
+        setUsers([...users, user]);
+        setCurrentUser(user);
+        return { success: true };
     };
 
     return (
         <DataContext.Provider value={{
             rates, addRate, updateRate, deleteRate,
             orders, addOrder, updateOrderStatus,
-            history
+            history,
+            currentUser, login, logout, register, users
         }}>
             {children}
         </DataContext.Provider>

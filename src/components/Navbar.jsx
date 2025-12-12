@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaUserCircle } from "react-icons/fa";
+import { useData } from "../context/DataContext";
 import logo from "./../assets/assets/images/recycle.png";
 
 function Navbar() {
   const navigate = useNavigate();
+  const { currentUser, logout } = useData();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleNavigate = (path) => {
@@ -56,19 +58,38 @@ function Navbar() {
 
             {/* Desktop Buttons */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate("/login")}
-                className="px-4 py-2 rounded-lg text-secondary hover:bg-gray-100 transition-all font-medium"
-              >
-                Login
-              </button>
+              {currentUser ? (
+                <>
+                  <button
+                    onClick={() => navigate("/user-orders")}
+                    className="px-4 py-2 rounded-lg text-secondary hover:bg-gray-100 transition-all font-medium flex items-center gap-2"
+                  >
+                    <FaUserCircle /> My Orders
+                  </button>
+                  <button
+                    onClick={() => { logout(); navigate('/'); }}
+                    className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all font-medium shadow-md"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="px-4 py-2 rounded-lg text-secondary hover:bg-gray-100 transition-all font-medium"
+                  >
+                    Login
+                  </button>
 
-              <button
-                onClick={() => navigate("/signup")}
-                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark transition-all font-medium shadow-md hover:shadow-lg"
-              >
-                SignUp
-              </button>
+                  <button
+                    onClick={() => navigate("/signup")}
+                    className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark transition-all font-medium shadow-md hover:shadow-lg"
+                  >
+                    SignUp
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -103,18 +124,37 @@ function Navbar() {
             </button>
 
             <div className="flex flex-col gap-3 mt-4">
-              <button
-                onClick={() => handleNavigate("/login")}
-                className="w-full py-3 rounded-lg border border-secondary text-secondary font-bold hover:bg-gray-50"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => handleNavigate("/signup")}
-                className="w-full py-3 rounded-lg bg-primary text-white font-bold hover:bg-primary-dark shadow-md"
-              >
-                SignUp
-              </button>
+              {currentUser ? (
+                <>
+                  <button
+                    onClick={() => handleNavigate("/user-orders")}
+                    className="w-full py-3 rounded-lg border border-secondary text-secondary font-bold hover:bg-gray-50 flex justify-center items-center gap-2"
+                  >
+                    <FaUserCircle /> My Orders
+                  </button>
+                  <button
+                    onClick={() => { logout(); handleNavigate('/'); }}
+                    className="w-full py-3 rounded-lg bg-red-500 text-white font-bold hover:bg-red-600 shadow-md"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleNavigate("/login")}
+                    className="w-full py-3 rounded-lg border border-secondary text-secondary font-bold hover:bg-gray-50"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => handleNavigate("/signup")}
+                    className="w-full py-3 rounded-lg bg-primary text-white font-bold hover:bg-primary-dark shadow-md"
+                  >
+                    SignUp
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

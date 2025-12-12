@@ -1,20 +1,32 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaList, FaShoppingCart, FaHistory, FaSignOutAlt } from 'react-icons/fa';
+import { FaTachometerAlt, FaList, FaShoppingCart, FaHistory, FaSignOutAlt, FaChartLine } from 'react-icons/fa';
+import { useData } from '../context/DataContext';
 
 const AdminLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { currentUser, logout } = useData();
+
+    // Protect Admin Route
+    React.useEffect(() => {
+        if (!currentUser || currentUser.role !== 'admin') {
+            navigate('/login');
+        }
+    }, [currentUser, navigate]);
+
+    if (!currentUser || currentUser.role !== 'admin') return null;
 
     const menuItems = [
         { path: '/admin', label: 'Dashboard', icon: <FaTachometerAlt /> },
         { path: '/admin/rates', label: 'Manage Rates', icon: <FaList /> },
         { path: '/admin/orders', label: 'Orders', icon: <FaShoppingCart /> },
+        { path: '/admin/revenue', label: 'Revenue', icon: <FaChartLine /> },
         { path: '/admin/history', label: 'History', icon: <FaHistory /> },
     ];
 
     const handleLogout = () => {
-        // Add logout logic here (clear token, etc.)
+        logout();
         navigate('/login');
     };
 
@@ -33,8 +45,8 @@ const AdminLayout = () => {
                             key={item.path}
                             onClick={() => navigate(item.path)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path))
-                                    ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                                ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                                : 'text-gray-300 hover:bg-white/10 hover:text-white'
                                 }`}
                         >
                             <span className="text-lg">{item.icon}</span>
@@ -63,8 +75,8 @@ const AdminLayout = () => {
                     </h2>
                     <div className="flex items-center gap-4">
                         <div className="text-right">
-                            <p className="text-sm font-bold text-gray-700">Admin User</p>
-                            <p className="text-xs text-gray-500">admin@recycotrack.com</p>
+                            <p className="text-sm font-bold text-gray-700">{currentUser.name}</p>
+                            <p className="text-xs text-gray-500">{currentUser.email}</p>
                         </div>
                         <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
                             A

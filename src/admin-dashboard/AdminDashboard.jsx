@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { FaShoppingCart, FaList, FaUsers, FaChartLine } from 'react-icons/fa';
 
 const AdminDashboard = () => {
     const { rates, orders } = useData();
 
+    const todayRevenue = useMemo(() => {
+        const today = new Date().toLocaleDateString();
+        return orders
+            .filter(order => order.status === 'Completed' && new Date(order.date).toLocaleDateString() === today)
+            .reduce((sum, order) => sum + (parseFloat(order.amount) || 0), 0);
+    }, [orders]);
+
     const stats = [
         { label: 'Total Orders', value: orders.length, icon: <FaShoppingCart />, color: 'bg-blue-500' },
         { label: 'Active Rates', value: rates.length, icon: <FaList />, color: 'bg-green-500' },
         { label: 'Total Users', value: '1,234', icon: <FaUsers />, color: 'bg-purple-500' }, // Mock data
-        { label: 'Revenue', value: 'PKR 45K', icon: <FaChartLine />, color: 'bg-orange-500' }, // Mock data
+        { label: "Today's Revenue", value: `${todayRevenue.toLocaleString()} PKR`, icon: <FaChartLine />, color: 'bg-orange-500' },
     ];
 
     return (
@@ -32,8 +39,7 @@ const AdminDashboard = () => {
             {/* Recent Orders Preview */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                    <h3 className="text-lg font-bold text-gray-800">Recent Scrap Requests</h3>
-                    <button className="text-primary text-sm font-bold hover:underline">View All</button>
+                    <h3 className="text-lg font-bold text-gray-800">All Scrap Requests</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
@@ -48,12 +54,13 @@ const AdminDashboard = () => {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {orders.length > 0 ? (
-                                orders.slice(0, 5).map((order) => (
+                                orders.map((order) => (
                                     <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4 text-sm font-medium text-gray-900">#{order.id}</td>
                                         <td className="px-6 py-4 text-sm text-gray-600">{order.customerName || 'Guest User'}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                                                order.status === 'Scheduled' ? 'bg-blue-100 text-blue-700' :
                                                     order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
                                                         'bg-red-100 text-red-700'
                                                 }`}>

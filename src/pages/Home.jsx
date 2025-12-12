@@ -45,7 +45,7 @@ function Home() {
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-4">
               <button
-                onClick={() => navigate('/coming-soon')}
+                onClick={() => navigate('/upload-scrap')}
                 className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-primary text-white font-bold text-lg shadow-lg hover:bg-primary-dark hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 Upload Scrap Now

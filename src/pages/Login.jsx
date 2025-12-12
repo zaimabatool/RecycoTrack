@@ -1,10 +1,29 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useData } from '../context/DataContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import logo from '../assets/assets/images/recycle.png';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useData();
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const result = login(formData.email, formData.password);
+    if (result.success) {
+      if (result.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } else {
+      setError(result.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg-light py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -25,8 +44,9 @@ const Login = () => {
           <p className="mt-2 text-sm text-gray-600">
             Sign in to your account
           </p>
+          {error && <p className="mt-4 text-sm text-red-500 font-bold bg-red-50 p-2 rounded">{error}</p>}
         </div>
-        <form className="mt-8 space-y-6" action="#" method="POST">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="mb-4">
@@ -41,6 +61,8 @@ const Login = () => {
                 required
                 className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm transition-all"
                 placeholder="Email address"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
             <div className="relative">
@@ -55,6 +77,8 @@ const Login = () => {
                 required
                 className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm pr-10 transition-all"
                 placeholder="Password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
               <button
                 type="button"

@@ -9,6 +9,8 @@ import RateList from './pages/RateList';
 
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
+import UploadScrap from './pages/UploadScrap';
+import UserOrders from './pages/UserOrders';
 import Loader from './components/Loader';
 import { DataProvider } from './context/DataContext';
 
@@ -18,6 +20,7 @@ import AdminDashboard from './admin-dashboard/AdminDashboard';
 import ManageRates from './admin-dashboard/ManageRates';
 import Orders from './admin-dashboard/Orders';
 import History from './admin-dashboard/History';
+import Revenue from './admin-dashboard/Revenue';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -44,12 +47,15 @@ function App() {
           <Route path="/rate-list" element={<RateList />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<Contact />} />
+          <Route path="/upload-scrap" element={<UploadScrap />} />
+          <Route path="/user-orders" element={<UserOrders />} />
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="rates" element={<ManageRates />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="revenue" element={<Revenue />} />
             <Route path="history" element={<History />} />
           </Route>
 
@@ -61,4 +67,3 @@ function App() {
 }
 
 export default App
-
