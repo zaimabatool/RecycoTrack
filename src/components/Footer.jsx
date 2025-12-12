@@ -8,7 +8,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 function Footer() {
   return (
-    <footer className="bg-[#051b46] text-white py-8 px-5 sm:px-10 lg:px-20 font-verdana">
+    <footer className="bg-secondary text-white py-8 px-5 sm:px-10 lg:px-20 font-verdana">
       <div className="max-w-7xl mx-auto flex flex-wrap justify-between pb-5 md:flex-row md:justify-around flex-col items-start">
         <div className="w-full md:w-[300px] p-2 mb-5 md:mb-0 order-1">
           <div className="logo">
@@ -18,7 +18,7 @@ function Footer() {
               className="w-10 h-10 object-contain"
             />
             <h2 className="text-xl font-bold mb-1">RecycoTrack</h2>
-            <h4 className="text-sm font-normal mt-0 mb-3 text-teal-400">
+            <h4 className="text-sm font-normal mt-0 mb-3 text-accent">
               Smart Scrap Selling
             </h4>
           </div>
@@ -32,9 +32,9 @@ function Footer() {
             <FaTwitterSquare />
             <FaSquareInstagram />
             <div className="flex space-x-4"></div>
-            <i className="fa-brands fa-facebook-f text-teal-400 text-lg"></i>
-            <i className="fa-brands fa-instagram text-teal-400 text-lg"></i>
-            <i className="fa-brands fa-twitter text-teal-400 text-lg"></i>
+            <i className="fa-brands fa-facebook-f text-accent text-lg"></i>
+            <i className="fa-brands fa-instagram text-accent text-lg"></i>
+            <i className="fa-brands fa-twitter text-accent text-lg"></i>
           </div>
         </div>
 
@@ -63,20 +63,20 @@ function Footer() {
           <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
           <i class="fa-solid fa-location-dot"></i>
           <div className="flex items-center text-sm mb-2">
-            <i className="fa-solid fa-location-dot mr-3 text-teal-400">
+            <i className="fa-solid fa-location-dot mr-3 text-accent">
               <FaLocationDot />
             </i>
 
             <p> Sahiwal, Punjab, Pakistan</p>
           </div>
           <div className="flex items-center text-sm mb-2">
-            <i className="fa-solid fa-phone mr-3 text-teal-400">
+            <i className="fa-solid fa-phone mr-3 text-accent">
               <FaPhoneAlt />
             </i>
             <p>+92 300 1234567</p>
           </div>
           <div className="flex items-center text-sm">
-            <i className="fa-regular fa-message mr-3 text-teal-400">
+            <i className="fa-regular fa-message mr-3 text-accent">
               <IoMdMail />
             </i>
             <p>info@recycotrack.com</p>

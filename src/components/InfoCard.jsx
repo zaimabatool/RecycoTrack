@@ -10,106 +10,115 @@ import { GoShieldCheck } from "react-icons/go";
 
 function InfoCard() {
   return (
-    <div className="w-100%">
-      <div className="max-w-[1280px] w-full mx-auto flex py-[70px] px-[10px] py-[20px] max-[990px]:flex-col gap-[20px]">
+    <div className="w-full">
+      <div className="max-w-[1280px] w-full mx-auto flex py-16 px-4 flex-col lg:flex-row gap-12 items-start">
 
-
-        <div className="w-[50%] flex justify-center flex-col items-start gap-[30px] max-[990px]:w-[100%]">
-          <h2 className="sm:text-[30px] text-[22px] font-verdana text-[#0e9d90] font-bold">Why Choose RecycoTrack?</h2>
-          <p className="my-5 text-[#555]">RecycoTrack is revolutionizing thr scrap selling experience in sahiwal.We combine cutting-edge AI technology with traditional scrap buying to make recycling easier,faster,and more rewarding for everyone.</p>
-          <div className="flex items-center justify-center gap-[20px] w-[90%] flex-col sm:flex-row">
-            <div className="w-[100%] flex gap-[20px] sm:w-[40%]">
-              <div className="h-10 p-3 bg-[#0e9d90] rounded-lg text-[white] cursor-pointer flex items-center justify-center"><FaCamera /></div>
-              <div className="">
-                <h3>AI-Powered detection</h3>
-                <p>Advanced technology for accurate material identification</p>
-              </div>
-            </div>
-
-            <div className="sm:w-[40%] w-[100%] flex gap-[20px]">
-              <div className="h-10 p-3 bg-[#0e9d90] rounded-lg text-[white] cursor-pointer flex items-center justify-cente"><FaRupeeSign /></div>
-              <div className="">
-                <h3>Fair and transparent rates</h3>
-                <p className="trans">Live market rates updated regularly</p>
-              </div>
-            </div>
+        {/* Left Section */}
+        <div className="w-full lg:w-1/2 flex flex-col gap-8">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary font-verdana mb-4">Why Choose RecycoTrack?</h2>
+            <p className="text-gray-600 leading-relaxed text-lg">
+              RecycoTrack is revolutionizing the scrap selling experience in Sahiwal. We combine cutting-edge AI technology with traditional scrap buying to make recycling easier, faster, and more rewarding for everyone.
+            </p>
           </div>
-          <div className="flex sm:flex-row flex-col items-center justify-center gap-[20px] w-[90%]">
-            <div className="flex gap-[20px] w-[100%] sm:w-[40%]">
-              <div className="h-10 p-3 bg-[#0e9d90] rounded-lg text-[white] cursor-pointer flex items-center justify-cente"><LuTimer /></div>
-              <div className="">
-                <h3>Quick & Convenient</h3>
-                <p className=" fast">Fast processing and flexible pickup options.</p>
+
+          <div className="grid sm:grid-cols-2 gap-8">
+            <div className="flex gap-4 items-start">
+              <div className="w-12 h-12 p-3 bg-primary rounded-xl text-white flex items-center justify-center shrink-0 shadow-lg shadow-primary/30 transition-transform hover:scale-105">
+                <FaCamera className="text-xl" />
+              </div>
+              <div>
+                <h3 className="font-bold text-secondary text-lg mb-1">AI-Powered Detection</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Advanced technology for accurate material identification</p>
               </div>
             </div>
-            <div className="w-[100%] sm:w-[40%] flex gap-[20px]">
-              <div className="h-10 p-3 bg-[#0e9d90] rounded-lg text-[white] cursor-pointer flex items-center justify-cente"><GoShieldCheck /></div>
-              <div className="reliable">
-                <h3>Trusted & Reliable</h3>
-                <p>Secure transactions & professional services</p>
+
+            <div className="flex gap-4 items-start">
+              <div className="w-12 h-12 p-3 bg-primary rounded-xl text-white flex items-center justify-center shrink-0 shadow-lg shadow-primary/30 transition-transform hover:scale-105">
+                <FaRupeeSign className="text-xl" />
+              </div>
+              <div>
+                <h3 className="font-bold text-secondary text-lg mb-1">Fair Rates</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Live market rates updated regularly for transparency</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="w-12 h-12 p-3 bg-primary rounded-xl text-white flex items-center justify-center shrink-0 shadow-lg shadow-primary/30 transition-transform hover:scale-105">
+                <LuTimer className="text-xl" />
+              </div>
+              <div>
+                <h3 className="font-bold text-secondary text-lg mb-1">Quick & Convenient</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Fast processing and flexible pickup options available</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="w-12 h-12 p-3 bg-primary rounded-xl text-white flex items-center justify-center shrink-0 shadow-lg shadow-primary/30 transition-transform hover:scale-105">
+                <GoShieldCheck className="text-xl" />
+              </div>
+              <div>
+                <h3 className="font-bold text-secondary text-lg mb-1">Trusted & Reliable</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Secure transactions & professional services guaranteed</p>
               </div>
             </div>
           </div>
         </div>
 
 
-        {/* section 2 */}
-        <div class="bg-teal-100  w-[50%] max-[990px]:w-[100%] p-6 rounded-xl ">
-          <h2 class="text-2xl font-bold text-black-800 mb-6">
+        {/* Right Section - Scrap Center Info */}
+        <div className="w-full lg:w-1/2 bg-bg-light p-8 rounded-2xl border border-primary/10 shadow-sm">
+          <h2 className="text-2xl font-bold text-secondary mb-8 border-b border-primary/10 pb-4">
             Scrap Center Information
           </h2>
-          {/* div1 */}
 
-          <div class="mb-5">
-            <div class="flex items-center gap-2 ">
-              <div className='w-[45px] h-[45px] rounded-[10px] flex justify-center items-center bg-amber-50'><FaRegBuilding /></div>
+          <div className="space-y-6">
+            <div className="flex items-start gap-4 group">
+              <div className='w-12 h-12 rounded-xl flex justify-center items-center bg-white text-primary shadow-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors'>
+                <FaRegBuilding className="text-xl" />
+              </div>
               <div>
-                <h3 class="font-semibold text-black 700">Center Name</h3>
-                <p class="text-black-600 ">RecycoTrack Scrap Center</p>
+                <h3 className="font-bold text-secondary text-lg">Center Name</h3>
+                <p className="text-gray-600">RecycoTrack Scrap Center</p>
               </div>
             </div>
-          </div>
-          {/* div2 */}
-          <div class="mb-5">
-            <div class="flex items-center gap-2 ">
-              <div className='w-[45px] h-[45px] rounded-[10px] flex justify-center items-center bg-amber-50'><CiLocationOn /></div>
+
+            <div className="flex items-start gap-4 group">
+              <div className='w-12 h-12 rounded-xl flex justify-center items-center bg-white text-primary shadow-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors'>
+                <CiLocationOn className="text-xl" />
+              </div>
               <div>
-                <h3 class="font-semibold text-black-700 ">Address</h3>
-                <p class="text-black-600 ">
-                  Main Bazar Road, Sahiwal, Punjab, Pakistan</p>
+                <h3 className="font-bold text-secondary text-lg">Address</h3>
+                <p className="text-gray-600">Main Bazar Road, Sahiwal, Punjab, Pakistan</p>
               </div>
             </div>
-          </div>
 
-          {/* div3 */}
-          <div class="mb-5">
-            <div class="flex items-center gap-2">
-              <div className='w-[45px] h-[45px] rounded-[10px] flex justify-center items-center bg-amber-50'><LuTimer /></div>
+            <div className="flex items-start gap-4 group">
+              <div className='w-12 h-12 rounded-xl flex justify-center items-center bg-white text-primary shadow-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors'>
+                <LuTimer className="text-xl" />
+              </div>
               <div>
-                <h3 class="font-semibold text-black-700">Working Hours</h3>
-                <p class="text-black-600 ">Monday – Saturday: 8:00 AM – 6:00 PM</p>
-                <p class="text-black-600">Sunday: Closed</p>
+                <h3 className="font-bold text-secondary text-lg">Working Hours</h3>
+                <p className="text-gray-600">Monday – Saturday: 8:00 AM – 6:00 PM</p>
+                <p className="text-gray-500 text-sm">Sunday: Closed</p>
               </div>
             </div>
-          </div>
-          {/* div4 */}
 
-          <div>
-            <div class="flex items-center gap-2 ">
-              <div className='w-[45px] h-[45px] rounded-[10px] flex justify-center items-center bg-amber-50'><IoCallOutline /></div>
-              <div>
-                <h3 class="font-semibold text-black-700 ">Contact</h3>
-                <p class="text-black-600">+92 300 1234567</p>
-                <p class="text-black-600">info@recycotrack.com</p>
+            <div className="flex items-start gap-4 group">
+              <div className='w-12 h-12 rounded-xl flex justify-center items-center bg-white text-primary shadow-sm shrink-0 group-hover:bg-primary group-hover:text-white transition-colors'>
+                <IoCallOutline className="text-xl" />
               </div>
-
+              <div>
+                <h3 className="font-bold text-secondary text-lg">Contact</h3>
+                <p className="text-gray-600 font-medium">+92 300 1234567</p>
+                <p className="text-gray-600">info@recycotrack.com</p>
+              </div>
             </div>
           </div>
 
         </div>
       </div>
     </div>
-
   )
 }
 

@@ -22,21 +22,21 @@ function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <div className="relative pt-[70px] bg-gradient-to-br from-[#e6f7f6] to-white overflow-hidden">
+      <div className="relative pt-[70px] bg-gradient-to-br from-bg-light to-white overflow-hidden">
         {/* Background Decorative Elements */}
-        <div className="absolute top-20 right-0 w-64 h-64 bg-[#0e9d90] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-        <div className="absolute top-40 right-40 w-64 h-64 bg-[#082b5c] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-20 right-0 w-64 h-64 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+        <div className="absolute top-40 right-40 w-64 h-64 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
 
         <div className="max-w-[1280px] mx-auto px-4 py-12 md:py-20 flex flex-col-reverse md:flex-row items-center justify-between gap-10">
 
           {/* Left Side (Text) */}
           <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-6 z-10">
-            <div className="inline-block px-4 py-1 rounded-full bg-[#0e9d90]/10 text-[#0e9d90] font-semibold text-sm mb-2">
+            <div className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary font-semibold text-sm mb-2">
               ♻️ Smart Scrap Selling in Sahiwal
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#082b5c] leading-tight">
-              Turn Your <span className="text-[#0e9d90]">Scrap</span> <br /> Into <span className="text-[#0e9d90]">Cash!</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-secondary leading-tight">
+              Turn Your <span className="text-primary">Scrap</span> <br /> Into <span className="text-primary">Cash!</span>
             </h1>
 
             <p className="text-gray-600 text-lg md:text-xl max-w-lg leading-relaxed">
@@ -46,14 +46,14 @@ function Home() {
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto pt-4">
               <button
                 onClick={() => navigate('/coming-soon')}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#0e9d90] text-white font-bold text-lg shadow-lg hover:bg-[#025952] hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-primary text-white font-bold text-lg shadow-lg hover:bg-primary-dark hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 Upload Scrap Now
               </button>
 
               <button
                 onClick={() => navigate('/rate-list')}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl border-2 border-[#082b5c] text-[#082b5c] font-bold text-lg hover:bg-[#082b5c] hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl border-2 border-secondary text-secondary font-bold text-lg hover:bg-secondary hover:text-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
                 View Today's Rates
               </button>
@@ -72,7 +72,7 @@ function Home() {
           {/* Right Side (Image) */}
           <div className="w-full md:w-1/2 flex justify-center items-center relative z-10">
             <div className="relative w-full max-w-md aspect-square">
-              <div className="absolute inset-0 bg-[#0e9d90] rounded-full opacity-10 animate-pulse"></div>
+              <div className="absolute inset-0 bg-primary rounded-full opacity-10 animate-pulse"></div>
               <img
                 src={heroImg}
                 alt="Recycling Illustration"
@@ -89,7 +89,7 @@ function Home() {
       {/* Accepted Materials Section */}
       <div className="w-full py-16 bg-white">
         <div className="max-w-[1280px] w-full flex flex-col items-center mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#082b5c] mb-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4 text-center">
             Accepted Materials
           </h2>
 
@@ -109,7 +109,7 @@ function Home() {
       {/* How It Works Section */}
       <div className="w-full py-16 bg-gray-50">
         <div className="w-full max-w-[1280px] flex flex-col items-center mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#082b5c] mb-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-4 text-center">
             How It Works
           </h2>
 

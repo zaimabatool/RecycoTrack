@@ -7,15 +7,19 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-bg-light py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+
+      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-2xl relative z-10 border border-gray-100">
         <div className="text-center">
           <img
             className="mx-auto h-16 w-16 object-contain"
             src={logo}
             alt="RecycoTrack"
           />
-          <h2 className="mt-6 text-3xl font-extrabold text-[#082b5c]">
+          <h2 className="mt-6 text-3xl font-extrabold text-secondary">
             Welcome Back
           </h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -35,7 +39,7 @@ const Login = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#0e9d90] focus:border-[#0e9d90] focus:z-10 sm:text-sm"
+                className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm transition-all"
                 placeholder="Email address"
               />
             </div>
@@ -49,7 +53,7 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#0e9d90] focus:border-[#0e9d90] focus:z-10 sm:text-sm pr-10"
+                className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm pr-10 transition-all"
                 placeholder="Password"
               />
               <button
@@ -68,7 +72,7 @@ const Login = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-[#0e9d90] focus:ring-[#0e9d90] border-gray-300 rounded"
+                className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                 Remember me
@@ -76,7 +80,7 @@ const Login = () => {
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-[#0e9d90] hover:text-[#025952]">
+              <a href="#" className="font-medium text-primary hover:text-primary-dark">
                 Forgot your password?
               </a>
             </div>
@@ -85,7 +89,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#0e9d90] hover:bg-[#025952] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0e9d90] transition-colors duration-200"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 shadow-lg shadow-primary/30 hover:shadow-primary/50 transform hover:-translate-y-0.5"
             >
               Sign in
             </button>
@@ -94,7 +98,7 @@ const Login = () => {
           <div className="text-center mt-4">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link to="/signup" className="font-medium text-[#0e9d90] hover:text-[#025952]">
+              <Link to="/signup" className="font-medium text-primary hover:text-primary-dark">
                 Sign up
               </Link>
             </p>

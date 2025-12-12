@@ -25,7 +25,7 @@ function Navbar() {
               className="w-10 h-10 object-contain"
             />
             <div>
-              <p className="font-bold font-[Verdana] text-[#082b5c] text-xl">
+              <p className="font-bold font-[Verdana] text-secondary text-xl">
                 RecycoTrack
               </p>
               <p className="font-[Arial] text-teal-800 text-sm">
@@ -37,19 +37,19 @@ function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex gap-8 items-center">
             <div className="flex items-center gap-6">
-              <button onClick={() => navigate('/')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
+              <button onClick={() => navigate('/')} className="text-secondary hover:text-accent font-medium transition-colors">
                 Home
               </button>
-              <button onClick={() => navigate('/rate-list')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
+              <button onClick={() => navigate('/rate-list')} className="text-secondary hover:text-accent font-medium transition-colors">
                 Rate List
               </button>
-              <button onClick={() => navigate('/coming-soon')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
+              <button onClick={() => navigate('/coming-soon')} className="text-secondary hover:text-accent font-medium transition-colors">
                 How It Work
               </button>
-              <button onClick={() => navigate('/about-us')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
+              <button onClick={() => navigate('/about-us')} className="text-secondary hover:text-accent font-medium transition-colors">
                 About Us
               </button>
-              <button onClick={() => navigate('/coming-soon')} className="text-[#082b5c] hover:text-[#0CAEA0] font-medium transition-colors">
+              <button onClick={() => navigate('/coming-soon')} className="text-secondary hover:text-accent font-medium transition-colors">
                 Contact Us
               </button>
             </div>
@@ -58,14 +58,14 @@ function Navbar() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate("/login")}
-                className="px-4 py-2 rounded-lg text-[#082b5c] hover:bg-gray-100 transition-all font-medium"
+                className="px-4 py-2 rounded-lg text-secondary hover:bg-gray-100 transition-all font-medium"
               >
                 Login
               </button>
 
               <button
                 onClick={() => navigate("/signup")}
-                className="px-4 py-2 rounded-lg bg-[#0e9d90] text-white hover:bg-[#025952] transition-all font-medium shadow-md hover:shadow-lg"
+                className="px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-dark transition-all font-medium shadow-md hover:shadow-lg"
               >
                 SignUp
               </button>
@@ -74,7 +74,7 @@ function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden text-[#082b5c] text-2xl focus:outline-none"
+            className="md:hidden text-secondary text-2xl focus:outline-none"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <FaTimes /> : <FaBars />}
@@ -86,32 +86,32 @@ function Navbar() {
       {isMenuOpen && (
         <div className="fixed inset-0 top-[70px] bg-white z-40 md:hidden flex flex-col p-6 shadow-xl animate-in slide-in-from-top-10 duration-200">
           <div className="flex flex-col gap-4 text-center">
-            <button onClick={() => handleNavigate('/')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+            <button onClick={() => handleNavigate('/')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
               Home
             </button>
-            <button onClick={() => handleNavigate('/rate-list')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+            <button onClick={() => handleNavigate('/rate-list')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
               Rate List
             </button>
-            <button onClick={() => handleNavigate('/coming-soon')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+            <button onClick={() => handleNavigate('/coming-soon')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
               How It Work
             </button>
-            <button onClick={() => handleNavigate('/about-us')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+            <button onClick={() => handleNavigate('/about-us')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
               About Us
             </button>
-            <button onClick={() => handleNavigate('/coming-soon')} className="text-[#082b5c] text-lg font-medium py-2 border-b border-gray-100 hover:text-[#0e9d90]">
+            <button onClick={() => handleNavigate('/coming-soon')} className="text-secondary text-lg font-medium py-2 border-b border-gray-100 hover:text-primary">
               Contact Us
             </button>
 
             <div className="flex flex-col gap-3 mt-4">
               <button
                 onClick={() => handleNavigate("/login")}
-                className="w-full py-3 rounded-lg border border-[#082b5c] text-[#082b5c] font-bold hover:bg-gray-50"
+                className="w-full py-3 rounded-lg border border-secondary text-secondary font-bold hover:bg-gray-50"
               >
                 Login
               </button>
               <button
                 onClick={() => handleNavigate("/signup")}
-                className="w-full py-3 rounded-lg bg-[#0e9d90] text-white font-bold hover:bg-[#025952] shadow-md"
+                className="w-full py-3 rounded-lg bg-primary text-white font-bold hover:bg-primary-dark shadow-md"
               >
                 SignUp
               </button>
