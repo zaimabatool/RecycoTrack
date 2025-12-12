@@ -9,25 +9,30 @@ import {
 import { BiCylinder } from 'react-icons/bi';
 import { BsCpu } from 'react-icons/bs';
 
+import { useData } from '../context/DataContext';
+
 const RateList = () => {
+  const { rates } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [calcMaterialId, setCalcMaterialId] = useState('');
   const [calcWeight, setCalcWeight] = useState('');
 
-  const rates = [
-    { id: 1, material: 'Plastic Bottles (PET)', category: 'Plastic', unit: 'kg', price: 45, trend: 'up', icon: <GiSodaCan className="text-blue-500" /> },
-    { id: 2, material: 'Newspaper', category: 'Paper', unit: 'kg', price: 25, trend: 'stable', icon: <GiNewspaper className="text-gray-500" /> },
-    { id: 3, material: 'Cardboard', category: 'Paper', unit: 'kg', price: 18, trend: 'down', icon: <GiCardboardBox className="text-yellow-600" /> },
-    { id: 4, material: 'Iron', category: 'Metal', unit: 'kg', price: 60, trend: 'up', icon: <GiMetalBar className="text-gray-700" /> },
-    { id: 5, material: 'Steel', category: 'Metal', unit: 'kg', price: 55, trend: 'stable', icon: <GiSteelClaws className="text-gray-400" /> },
-    { id: 6, material: 'Aluminium', category: 'Metal', unit: 'kg', price: 180, trend: 'up', icon: <BiCylinder className="text-gray-300" /> },
-    { id: 7, material: 'Copper', category: 'Metal', unit: 'kg', price: 750, trend: 'up', icon: <BiCylinder className="text-orange-500" /> },
-    { id: 8, material: 'Brass', category: 'Metal', unit: 'kg', price: 480, trend: 'down', icon: <BiCylinder className="text-yellow-500" /> },
-    { id: 9, material: 'E-Waste (Mixed)', category: 'E-Waste', unit: 'kg', price: 35, trend: 'stable', icon: <GiCircuitry className="text-green-600" /> },
-    { id: 10, material: 'Batteries', category: 'E-Waste', unit: 'kg', price: 90, trend: 'up', icon: <GiBatteryPack className="text-red-600" /> },
-    { id: 11, material: 'CPU Processor', category: 'E-Waste', unit: 'pc', price: 250, trend: 'stable', icon: <BsCpu className="text-blue-600" /> },
-  ];
+  // Icon Mapping Helper
+  const getIcon = (iconType, className) => {
+    const icons = {
+      GiSodaCan: <GiSodaCan className={className} />,
+      GiNewspaper: <GiNewspaper className={className} />,
+      GiCardboardBox: <GiCardboardBox className={className} />,
+      GiMetalBar: <GiMetalBar className={className} />,
+      GiSteelClaws: <GiSteelClaws className={className} />,
+      BiCylinder: <BiCylinder className={className} />,
+      GiCircuitry: <GiCircuitry className={className} />,
+      GiBatteryPack: <GiBatteryPack className={className} />,
+      BsCpu: <BsCpu className={className} />
+    };
+    return icons[iconType] || <GiMetalBar className={className} />;
+  };
 
   const categories = ['All', 'Metal', 'Plastic', 'Paper', 'E-Waste'];
 
@@ -111,7 +116,7 @@ const RateList = () => {
                           <td className="py-4 px-6">
                             <div className="flex items-center gap-3">
                               <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-white transition-colors">
-                                {item.icon}
+                                {getIcon(item.iconType, item.iconColor)}
                               </div>
                               <span className="font-medium text-secondary">{item.material}</span>
                             </div>

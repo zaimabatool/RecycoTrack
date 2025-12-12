@@ -10,6 +10,14 @@ import RateList from './pages/RateList';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import Loader from './components/Loader';
+import { DataProvider } from './context/DataContext';
+
+// Admin Components
+import AdminLayout from './admin-dashboard/AdminLayout';
+import AdminDashboard from './admin-dashboard/AdminDashboard';
+import ManageRates from './admin-dashboard/ManageRates';
+import Orders from './admin-dashboard/Orders';
+import History from './admin-dashboard/History';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -26,18 +34,29 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/coming-soon" element={<ComingSoon />} />
-        <Route path="/rate-list" element={<RateList />} />
-        <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/contact-us" element={<Contact />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+    <DataProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/coming-soon" element={<ComingSoon />} />
+          <Route path="/rate-list" element={<RateList />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<Contact />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="rates" element={<ManageRates />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="history" element={<History />} />
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </DataProvider>
   )
 }
 
