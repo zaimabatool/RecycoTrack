@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { useData } from '../context/DataContext';
 import { FaCloudUploadAlt, FaCamera, FaMagic, FaCheckCircle, FaMoneyBillWave, FaCreditCard } from 'react-icons/fa';
 
@@ -62,41 +60,46 @@ const UploadScrap = () => {
         if (mode === 'ai') {
             return detectedItems.reduce((acc, item) => acc + (item.price * item.detectedWeight), 0).toFixed(0);
         } else {
-            const rate = rates.find(r => r.id === parseInt(manualData.materialId));
+            const rate = rates.find(r => r.id === manualData.materialId);
             return rate ? (rate.price * parseFloat(manualData.weight || 0)).toFixed(0) : 0;
         }
     };
 
-    const handleSubmitOrder = (e) => {
+    const handleSubmitOrder = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
+        const selectedRate = rates.find(r => r.id === manualData.materialId);
 
         const orderData = {
             userId: currentUser?.id,
             customerName: currentUser?.name || "Guest User",
-            date: new Date().toISOString(),
-            status: 'Pending',
             paymentMethod,
             paymentDetails: paymentMethod === 'online' ? paymentDetails : null,
             amount: calculateTotal(),
             items: mode === 'ai' ? detectedItems : [{
-                ...rates.find(r => r.id === parseInt(manualData.materialId)),
+                ...selectedRate,
                 weight: manualData.weight
             }],
             // For simple display in admin table
-            materialName: mode === 'ai' ? detectedItems[0]?.material : rates.find(r => r.id === parseInt(manualData.materialId))?.material,
+            materialName: mode === 'ai' ? detectedItems[0]?.material : selectedRate?.material,
             weight: mode === 'ai' ? detectedItems[0]?.detectedWeight : manualData.weight
         };
 
-        addOrder(orderData);
-        alert("Order submitted successfully! We will contact you shortly.");
-        navigate('/');
+        const result = await addOrder(orderData);
+        setLoading(false);
+
+        if (result.success) {
+            alert("Order submitted successfully! We will contact you shortly.");
+            navigate('/user-orders');
+        } else {
+            alert(`Error: ${result.message}`);
+        }
     };
 
     return (
-        <div className="min-h-screen bg-bg-light font-sans">
-            <Navbar />
-
-            <div className="pt-[100px] pb-20 px-4 max-w-4xl mx-auto">
+        <div className="bg-bg-light">
+            <div className="pt-20 pb-20 px-4 max-w-4xl mx-auto">
                 <h1 className="text-3xl md:text-4xl font-bold text-secondary text-center mb-8">
                     Sell Your Scrap
                 </h1>
@@ -308,7 +311,6 @@ const UploadScrap = () => {
                     )}
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };

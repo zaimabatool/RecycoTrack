@@ -3,7 +3,7 @@ import { useData } from '../context/DataContext';
 import { FaCalendarAlt, FaClock, FaEye, FaCheckDouble, FaTimes } from 'react-icons/fa';
 
 const Orders = () => {
-    const { orders, updateOrderStatus } = useData();
+    const { orders, updateOrderStatus, scheduleOrder, finalizeOrder } = useData();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOrderId, setSelectedOrderId] = useState(null);
     const [scheduleData, setScheduleData] = useState({
@@ -15,56 +15,42 @@ const Orders = () => {
 
     // Negotiation State
     const [viewOrder, setViewOrder] = useState(null);
-    const [finalizeOrder, setFinalizeOrder] = useState(null);
+    const [finalizeOrderState, setFinalizeOrderState] = useState(null);
     const [finalData, setFinalData] = useState({ weight: '', price: '' });
 
-    const handleStatusChange = (id, newStatus) => {
+    const handleStatusChange = async (id, newStatus) => {
         if (newStatus === 'Scheduled') {
             setSelectedOrderId(id);
             setIsModalOpen(true);
         } else {
-            updateOrderStatus(id, newStatus);
+            await updateOrderStatus(id, newStatus);
         }
     };
 
-    const handleScheduleSubmit = (e) => {
+    const handleScheduleSubmit = async (e) => {
         e.preventDefault();
-        const { startDate, endDate, startTime, endTime } = scheduleData;
-
-        const start = new Date(startDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        const end = new Date(endDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-
-        const pickupTime = `${start} - ${end}, ${startTime} to ${endTime}`;
-
-        updateOrderStatus(selectedOrderId, 'Scheduled', { pickupTime });
+        await scheduleOrder(selectedOrderId, scheduleData);
         setIsModalOpen(false);
         setScheduleData({ startDate: '', endDate: '', startTime: '', endTime: '' });
     };
 
     const openFinalizeModal = (order) => {
-        setFinalizeOrder(order);
+        setFinalizeOrderState(order);
         setFinalData({ weight: order.weight, price: order.amount });
     };
 
-    const handleFinalizeSubmit = (e) => {
+    const handleFinalizeSubmit = async (e) => {
         e.preventDefault();
-        // Check if values changed
-        if (parseFloat(finalData.price) !== parseFloat(finalizeOrder.amount) || parseFloat(finalData.weight) !== parseFloat(finalizeOrder.weight)) {
-            updateOrderStatus(finalizeOrder.id, 'Price Proposed', {
-                finalWeight: finalData.weight,
-                finalPrice: finalData.price,
-                originalPrice: finalizeOrder.amount,
-                originalWeight: finalizeOrder.weight
-            });
-        } else {
-            updateOrderStatus(finalizeOrder.id, 'Completed');
-        }
-        setFinalizeOrder(null);
+        await finalizeOrder(finalizeOrderState.id, {
+            weight: finalData.weight,
+            price: finalData.price
+        });
+        setFinalizeOrderState(null);
     };
 
     return (
         <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Manage Orders</h2>
+            <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-6">Manage Orders</h2>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -85,7 +71,7 @@ const Orders = () => {
                             {orders.length > 0 ? (
                                 orders.map((order) => (
                                     <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900">#{order.id}</td>
+                                        <td className="px-6 py-4 font-medium text-gray-900">#{order.orderNumber || order.id}</td>
                                         <td className="px-6 py-4 text-gray-600">{order.customerName || 'Guest'}</td>
                                         <td className="px-6 py-4 text-gray-800">{order.materialName}</td>
                                         <td className="px-6 py-4 text-gray-600">{order.weight} kg</td>
@@ -101,76 +87,78 @@ const Orders = () => {
                                                 {order.status}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right space-x-2">
-                                            <button
-                                                onClick={() => setViewOrder(order)}
-                                                className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-gray-200 transition-colors"
-                                                title="View Details"
-                                            >
-                                                <FaEye />
-                                            </button>
-                                            {order.status === 'Pending' && (
-                                                <>
-                                                    <button
-                                                        onClick={() => handleStatusChange(order.id, 'Scheduled')}
-                                                        className="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition-colors"
-                                                    >
-                                                        Accept & Schedule
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleStatusChange(order.id, 'Cancelled')}
-                                                        className="text-xs bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
-                                                    >
-                                                        Reject
-                                                    </button>
-                                                </>
-                                            )}
-                                            {order.status === 'Scheduled' && (
-                                                <>
-                                                    <button
-                                                        onClick={() => openFinalizeModal(order)}
-                                                        className="text-xs bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
-                                                    >
-                                                        Confirm & Pay
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleStatusChange(order.id, 'Cancelled')}
-                                                        className="text-xs bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
-                                                    >
-                                                        Reject
-                                                    </button>
-                                                </>
-                                            )}
-                                            {order.status === 'Completed' || order.status === 'Cancelled' ? (
-                                                <span className="text-xs text-gray-400 italic">No actions</span>
-                                            ) : null}
-                                            {order.status === 'Price Proposed' && (
-                                                <span className="text-xs text-orange-500 font-bold">Proposal Sent</span>
-                                            )}
-                                            {order.status === 'Price Rejected' && (
-                                                <div className="flex gap-1 justify-end">
-                                                    <button
-                                                        onClick={() => handleStatusChange(order.id, 'Cancelled')}
-                                                        className="text-xs bg-red-500 text-white px-2 py-1 rounded"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                    <button
-                                                        onClick={() => openFinalizeModal(order)}
-                                                        className="text-xs bg-blue-500 text-white px-2 py-1 rounded"
-                                                    >
-                                                        Retry
-                                                    </button>
-                                                </div>
-                                            )}
-                                            {order.status === 'Price Accepted' && (
+                                         <td className="px-6 py-4 text-right">
+                                            <div className="flex items-center justify-end gap-2">
                                                 <button
-                                                    onClick={() => handleStatusChange(order.id, 'Completed')}
-                                                    className="text-xs bg-teal-500 text-white px-3 py-1 rounded hover:bg-teal-600 transition-colors flex items-center gap-1"
+                                                    onClick={() => setViewOrder(order)}
+                                                    className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                                                    title="View Details"
                                                 >
-                                                    <FaCheckDouble /> Complete Order
+                                                    <FaEye />
                                                 </button>
-                                            )}
+                                                {order.status === 'Pending' && (
+                                                    <div className="flex gap-1">
+                                                        <button
+                                                            onClick={() => handleStatusChange(order.id, 'Scheduled')}
+                                                            className="text-xs bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                                        >
+                                                            Accept
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleStatusChange(order.id, 'Cancelled')}
+                                                            className="text-xs bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {order.status === 'Scheduled' && (
+                                                    <div className="flex gap-1">
+                                                        <button
+                                                            onClick={() => openFinalizeModal(order)}
+                                                            className="text-xs bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap"
+                                                        >
+                                                            Finalize
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleStatusChange(order.id, 'Cancelled')}
+                                                            className="text-xs bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {order.status === 'Price Rejected' && (
+                                                    <div className="flex gap-1">
+                                                        <button
+                                                            onClick={() => handleStatusChange(order.id, 'Cancelled')}
+                                                            className="text-xs bg-red-500 text-white px-2 py-2 rounded-lg"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        <button
+                                                            onClick={() => openFinalizeModal(order)}
+                                                            className="text-xs bg-blue-500 text-white px-2 py-2 rounded-lg"
+                                                        >
+                                                            Retry
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {order.status === 'Price Accepted' && (
+                                                    <button
+                                                        onClick={() => handleStatusChange(order.id, 'Completed')}
+                                                        className="text-xs bg-teal-500 text-white px-3 py-2 rounded-lg hover:bg-teal-600 transition-colors flex items-center gap-1 whitespace-nowrap"
+                                                    >
+                                                        <FaCheckDouble /> Complete
+                                                    </button>
+                                                )}
+                                                {(order.status === 'Completed' || order.status === 'Cancelled') && (
+                                                    <span className="text-xs text-gray-400 italic">No actions</span>
+                                                )}
+                                                {order.status === 'Price Proposed' && (
+                                                    <span className="text-xs text-orange-500 font-bold whitespace-nowrap">Proposal Sent</span>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -270,7 +258,7 @@ const Orders = () => {
                                 <FaTimes />
                             </button>
                             <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                                <FaEye className="text-primary" /> Order Details #{viewOrder.id}
+                                <FaEye className="text-primary" /> Order Details #{viewOrder.orderNumber || viewOrder.id}
                             </h3>
 
                             <div className="space-y-4">
@@ -333,7 +321,7 @@ const Orders = () => {
 
             {/* Finalize / Negotiate Modal */}
             {
-                finalizeOrder && (
+                finalizeOrderState && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
                             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -373,7 +361,7 @@ const Orders = () => {
                                 <div className="flex gap-3 mt-6">
                                     <button
                                         type="button"
-                                        onClick={() => setFinalizeOrder(null)}
+                                        onClick={() => setFinalizeOrderState(null)}
                                         className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50"
                                     >
                                         Cancel
@@ -382,7 +370,7 @@ const Orders = () => {
                                         type="submit"
                                         className="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 shadow-lg shadow-green-600/30"
                                     >
-                                        {parseFloat(finalData.price) !== parseFloat(finalizeOrder.amount) ? 'Send Proposal' : 'Complete Order'}
+                                        {parseFloat(finalData.price) !== parseFloat(finalizeOrderState.amount) ? 'Send Proposal' : 'Complete Order'}
                                     </button>
                                 </div>
                             </form>

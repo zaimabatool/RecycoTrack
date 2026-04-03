@@ -5,7 +5,7 @@ import { FaTools } from 'react-icons/fa';
 
 const ComingSoon = () => {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+        <div className="flex grow flex-col items-center justify-center bg-bg-light px-4 py-20">
             <div className="relative mb-8">
                 <div className="absolute inset-0 bg-primary rounded-full opacity-20 animate-ping"></div>
                 <div className="relative bg-white p-6 rounded-full shadow-xl">

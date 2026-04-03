@@ -1,20 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { useData } from '../context/DataContext';
 import { FaBoxOpen, FaCheckCircle, FaClock, FaTimesCircle, FaTruck, FaExclamationTriangle } from 'react-icons/fa';
 
 const UserOrders = () => {
     const navigate = useNavigate();
-    const { orders, currentUser, updateOrderStatus } = useData();
+    const { orders, currentUser, acceptOrderProposal, rejectOrderProposal } = useData();
 
-    const handleAcceptProposal = (orderId) => {
-        updateOrderStatus(orderId, 'Price Accepted');
+    const handleAcceptProposal = async (orderId) => {
+        await acceptOrderProposal(orderId);
     };
 
-    const handleRejectProposal = (orderId) => {
-        updateOrderStatus(orderId, 'Price Rejected');
+    const handleRejectProposal = async (orderId) => {
+        await rejectOrderProposal(orderId);
     };
 
     // Redirect if not logged in
@@ -26,13 +24,16 @@ const UserOrders = () => {
 
     if (!currentUser) return null;
 
-    const myOrders = orders.filter(order => order.userId === currentUser.id);
+    // In the new API, orders are already filtered for the current user
+    // or they have a userId string that matches currentUser.id
+    const myOrders = orders.filter(order => {
+        const orderUserId = typeof order.userId === 'object' ? order.userId._id : order.userId;
+        return orderUserId === currentUser.id || orderUserId === currentUser._id;
+    });
 
     return (
-        <div className="min-h-screen bg-bg-light font-sans">
-            <Navbar />
-
-            <div className="pt-[100px] pb-20 px-4 max-w-4xl mx-auto">
+        <div className="bg-bg-light">
+            <div className="pt-24 pb-20 px-4 max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-secondary">
                         My Orders
@@ -51,7 +52,7 @@ const UserOrders = () => {
                                     {/* Order Info */}
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">#{order.id}</span>
+                                            <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded">#{order.orderNumber || order.id}</span>
                                             <span className="text-sm text-gray-500">{new Date(order.date).toLocaleDateString()}</span>
                                         </div>
                                         <h3 className="text-xl font-bold text-secondary mb-1">
@@ -171,7 +172,6 @@ const UserOrders = () => {
                     )}
                 </div>
             </div>
-            <Footer />
         </div>
     );
 };

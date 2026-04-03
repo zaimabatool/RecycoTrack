@@ -1,36 +1,20 @@
 import React from "react";
-import { IoCloudUploadSharp } from "react-icons/io5";
+
 function WorkCard({ names, icon, desc, clrs }) {
   return (
-    <div>
-      {/* <div className="w-full font-verdana"> */}
-      <section className="max-w-[1280px] w-full px-10 py-10 mx-auto text-center font-bold">
+    <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center h-full group">
+      <div className={`w-14 h-14 rounded-xl text-white flex items-center justify-center text-2xl mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300 ${clrs}`}>
+        {icon}
+      </div>
 
-        <div className=" grid-cols-4 gap-6 flex">
+      <h3 className="text-xl mb-3 font-bold text-secondary">
+        {names}
+      </h3>
 
-          {/* Upload Photo Card */}
-          <div className="bg-white rounded-xl p-5 border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-
-            <div className="flex justify-center mb-3">
-              <div className={`w-[45px] h-[45px] rounded-lg text-white flex items-center justify-center ${clrs}`}>
-                {icon}
-              </div>
-            </div>
-
-            <h3 className="text-lg mb-1 font-bold font-[Verdana]">
-              {names}
-            </h3>
-
-            <p className="text-sm text-[#444] font-sans">
-              {desc}
-            </p>
-
-          </div>
-        </div>
-      </section>
+      <p className="text-gray-600 text-sm leading-relaxed">
+        {desc}
+      </p>
     </div>
-
-    // </div>
   );
 }
 

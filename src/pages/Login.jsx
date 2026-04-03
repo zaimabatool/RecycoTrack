@@ -11,9 +11,9 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = login(formData.email, formData.password);
+    const result = await login(formData.email, formData.password);
     if (result.success) {
       if (result.user.role === 'admin') {
         navigate('/admin');
@@ -134,3 +134,4 @@ const Login = () => {
 };
 
 export default Login;
+// End of file

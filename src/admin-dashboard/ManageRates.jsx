@@ -57,13 +57,13 @@ const ManageRates = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Manage Scrap Rates</h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-800">Manage Scrap Rates</h2>
                 <button
                     onClick={() => handleOpenModal()}
-                    className="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors shadow-md"
+                    className="w-full sm:w-auto bg-primary text-white px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 active:scale-95"
                 >
-                    <FaPlus /> Add New Rate
+                    <FaPlus /> <span>Add New Rate</span>
                 </button>
             </div>
 

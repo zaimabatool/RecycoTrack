@@ -1,11 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useData } from '../context/DataContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import logo from '../assets/assets/images/recycle.png';
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const { register } = useData();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: ''
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      return setError('Passwords do not match');
+    }
+
+    setLoading(true);
+    const result = await register({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      phone: formData.phone
+    });
+    setLoading(false);
+
+    if (result.success) {
+      navigate('/');
+    } else {
+      setError(result.message);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg-light py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -26,49 +62,44 @@ const Signup = () => {
           <p className="mt-2 text-sm text-gray-600">
             Join RecycoTrack today
           </p>
+          {error && <p className="mt-4 text-sm text-red-500 font-bold bg-red-50 p-2 rounded">{error}</p>}
         </div>
-        <form className="mt-8 space-y-6" action="#" method="POST">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="mb-4">
-              <label htmlFor="name" className="sr-only">
-                Full Name
-              </label>
+              <label htmlFor="name" className="sr-only">Full Name</label>
               <input
                 id="name"
-                name="name"
                 type="text"
-                autoComplete="name"
                 required
                 className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm transition-all"
                 placeholder="Full Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
+              <label htmlFor="email-address" className="sr-only">Email address</label>
               <input
                 id="email-address"
-                name="email"
                 type="email"
-                autoComplete="email"
                 required
                 className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm transition-all"
                 placeholder="Email address"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
             <div className="mb-4 relative">
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
+              <label htmlFor="password" className="sr-only">Password</label>
               <input
                 id="password"
-                name="password"
                 type={showPassword ? "text" : "password"}
-                autoComplete="new-password"
                 required
                 className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm pr-10 transition-all"
                 placeholder="Password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
               <button
                 type="button"
@@ -79,17 +110,15 @@ const Signup = () => {
               </button>
             </div>
             <div className="relative">
-              <label htmlFor="confirm-password" className="sr-only">
-                Confirm Password
-              </label>
+              <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
               <input
                 id="confirm-password"
-                name="confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
                 required
                 className="appearance-none rounded-xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:z-10 sm:text-sm pr-10 transition-all"
                 placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               />
               <button
                 type="button"
@@ -104,9 +133,10 @@ const Signup = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 shadow-lg shadow-primary/30 hover:shadow-primary/50 transform hover:-translate-y-0.5"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 shadow-lg shadow-primary/30 hover:shadow-primary/50 transform hover:-translate-y-0.5 disabled:opacity-50"
             >
-              Sign up
+              {loading ? 'Creating Account...' : 'Sign up'}
             </button>
           </div>
 
@@ -123,5 +153,4 @@ const Signup = () => {
     </div>
   );
 };
-
 export default Signup;

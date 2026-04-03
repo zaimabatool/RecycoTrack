@@ -1,6 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { FaSearch, FaCalculator, FaFilter } from 'react-icons/fa';
 import {
   GiSodaCan, GiNewspaper, GiCardboardBox, GiMetalBar,
@@ -46,24 +44,25 @@ const RateList = () => {
 
   const calculateEarnings = () => {
     if (!calcMaterialId || !calcWeight) return 0;
-    const material = rates.find(r => r.id === parseInt(calcMaterialId));
+    const material = rates.find(r => r.id === calcMaterialId);
     return material ? material.price * parseFloat(calcWeight) : 0;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="pt-[100px] pb-10 px-4 max-w-[1280px] mx-auto">
+    <div className="bg-bg-light">
+      <div className="pt-20 pb-12 px-4 max-w-[1280px] mx-auto">
 
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-secondary mb-4">Current Scrap Rates</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+        <div className="text-center mb-12 animate-fade-in-down opacity-0">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-secondary mb-4 drop-shadow-sm">
+            Current <span className="text-primary">Scrap Rates</span>
+          </h1>
+          <p className="text-gray-500 max-w-2xl mx-auto text-lg font-medium leading-relaxed">
             Stay updated with the latest market prices. Filter by category or calculate your potential earnings instantly.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in-up opacity-0 animation-delay-300">
 
           {/* Left Column: Search, Filter & List */}
           <div className="lg:col-span-2 space-y-6">
@@ -81,7 +80,7 @@ const RateList = () => {
                 />
               </div>
 
-              <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+              <div className="flex gap-3 overflow-x-auto w-full md:w-auto py-2 px-2 no-scrollbar scroll-smooth items-center">
                 {categories.map(cat => (
                   <button
                     key={cat}
@@ -227,7 +226,6 @@ const RateList = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

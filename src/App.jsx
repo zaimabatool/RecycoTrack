@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -11,8 +11,11 @@ import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import UploadScrap from './pages/UploadScrap';
 import UserOrders from './pages/UserOrders';
+import Profile from './pages/Profile';
 import Loader from './components/Loader';
-import { DataProvider } from './context/DataContext';
+import { useData } from './context/DataContext';
+
+import MainLayout from './components/MainLayout';
 
 // Admin Components
 import AdminLayout from './admin-dashboard/AdminLayout';
@@ -23,46 +26,43 @@ import History from './admin-dashboard/History';
 import Revenue from './admin-dashboard/Revenue';
 
 function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+  const { loading } = useData();
 
   if (loading) {
     return <Loader />;
   }
 
   return (
-    <DataProvider>
-      <BrowserRouter>
-        <Routes>
+    <BrowserRouter>
+      <Routes>
+        {/* Public Routes with Global Layout */}
+        <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/coming-soon" element={<ComingSoon />} />
           <Route path="/rate-list" element={<RateList />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<Contact />} />
           <Route path="/upload-scrap" element={<UploadScrap />} />
           <Route path="/user-orders" element={<UserOrders />} />
-
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="rates" element={<ManageRates />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="revenue" element={<Revenue />} />
-            <Route path="history" element={<History />} />
-          </Route>
-
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/coming-soon" element={<ComingSoon />} />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </DataProvider>
+        </Route>
+
+        {/* Standalone Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Admin Routes with Private Layout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="rates" element={<ManageRates />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="revenue" element={<Revenue />} />
+          <Route path="history" element={<History />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 

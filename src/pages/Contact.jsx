@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { FaRegBuilding, FaPaperPlane, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CiLocationOn } from "react-icons/ci";
 import { LuTimer } from "react-icons/lu";
@@ -53,22 +51,22 @@ function Contact() {
     };
 
     return (
-        <div className="min-h-screen bg-bg-light font-sans">
-            <Navbar />
-
+        <div className="bg-bg-light">
             {/* Hero Section */}
-            <div className="pt-[120px] pb-20 px-4 text-center bg-gradient-to-br from-primary to-[#0b8c80] text-white relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-                <div className="max-w-[1280px] mx-auto relative z-10">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">Contact Us</h1>
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto opacity-90 font-light">
+            <div className="py-20 px-4 text-center bg-linear-to-br from-primary to-[#0b8c80] text-white relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-float"></div>
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 animate-float animation-delay-2000"></div>
+                <div className="max-w-[1280px] mx-auto relative z-10 animate-fade-in-up opacity-0">
+                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6 drop-shadow-lg">
+                        Contact <span className="text-accent">Us</span>
+                    </h1>
+                    <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-medium leading-relaxed">
                         We'd love to hear from you. Get in touch with us for any queries or support.
                     </p>
                 </div>
             </div>
 
-            <div className="max-w-[1280px] mx-auto px-4 py-16">
+            <div className="max-w-[1280px] mx-auto px-4 py-20 animate-fade-in-up opacity-0 animation-delay-300">
                 <div className="flex flex-col lg:flex-row gap-12">
 
                     {/* Left Side - Contact Form */}
@@ -235,7 +233,6 @@ function Contact() {
                 </div>
 
             </div>
-            <Footer />
         </div>
     );
 }

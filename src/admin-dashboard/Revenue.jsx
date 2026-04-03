@@ -3,65 +3,66 @@ import { useData } from '../context/DataContext';
 import { FaChartLine, FaFilter, FaCalendarAlt } from 'react-icons/fa';
 
 const Revenue = () => {
-    const { orders } = useData();
+    const { apiCall } = useData();
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
+    const [stats, setStats] = useState({
+        totalRevenue: 0,
+        completedOrdersCount: 0,
+        averageOrderValue: 0,
+        dailyRevenue: []
+    });
+    const [loading, setLoading] = useState(false);
 
-    // Filter completed orders
-    const completedOrders = useMemo(() => {
-        return orders.filter(order => order.status === 'Completed');
-    }, [orders]);
+    const fetchRevenue = React.useCallback(async () => {
+        setLoading(true);
+        try {
+            const query = new URLSearchParams();
+            if (dateRange.start) query.append('startDate', dateRange.start);
+            if (dateRange.end) query.append('endDate', dateRange.end);
 
-    // Filter by date range
-    const filteredOrders = useMemo(() => {
-        return completedOrders.filter(order => {
-            if (!dateRange.start && !dateRange.end) return true;
-            const orderDate = new Date(order.date);
-            const start = dateRange.start ? new Date(dateRange.start) : new Date('1970-01-01');
-            const end = dateRange.end ? new Date(dateRange.end) : new Date();
-            end.setHours(23, 59, 59, 999); // Include the end day
-            return orderDate >= start && orderDate <= end;
-        });
-    }, [completedOrders, dateRange]);
+            const data = await apiCall(`/admin/revenue?${query.toString()}`);
+            setStats(data.stats);
+        } catch (err) {
+            console.error('Failed to fetch revenue data');
+        } finally {
+            setLoading(false);
+        }
+    }, [apiCall, dateRange.start, dateRange.end]);
 
-    // Calculate Total Revenue
-    const totalRevenue = useMemo(() => {
-        return filteredOrders.reduce((sum, order) => sum + (parseFloat(order.amount) || 0), 0);
-    }, [filteredOrders]);
+    React.useEffect(() => {
+        fetchRevenue();
+    }, [fetchRevenue]);
 
-    // Calculate Daily Revenue
-    const dailyRevenue = useMemo(() => {
-        const daily = {};
-        filteredOrders.forEach(order => {
-            const date = new Date(order.date).toLocaleDateString();
-            daily[date] = (daily[date] || 0) + (parseFloat(order.amount) || 0);
-        });
-        return Object.entries(daily).sort((a, b) => new Date(b[0]) - new Date(a[0])); // Sort descending
-    }, [filteredOrders]);
+    const totalRevenue = stats?.totalRevenue || 0;
+    const filteredOrdersCount = stats?.completedOrdersCount || 0;
+    const dailyRevenue = stats?.dailyRevenue || [];
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+        <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Revenue Analytics</h2>
-                    <p className="text-gray-500">Track your earnings and financial performance</p>
+                    <h2 className="text-xl lg:text-2xl font-bold text-gray-800">Revenue Analytics</h2>
+                    <p className="text-sm text-gray-500">Track your earnings and financial performance</p>
                 </div>
 
                 {/* Filters */}
-                <div className="flex items-center gap-2 bg-white p-2 rounded-xl shadow-sm border border-gray-100">
-                    <FaFilter className="text-gray-400 ml-2" />
-                    <input
-                        type="date"
-                        className="p-2 rounded-lg text-sm border-none focus:ring-0 text-gray-600 outline-none"
-                        value={dateRange.start}
-                        onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                    />
-                    <span className="text-gray-400">-</span>
-                    <input
-                        type="date"
-                        className="p-2 rounded-lg text-sm border-none focus:ring-0 text-gray-600 outline-none"
-                        value={dateRange.end}
-                        onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                    />
+                <div className="w-full lg:w-auto flex items-center gap-2 bg-white p-2 rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+                    <FaFilter className="text-gray-400 ml-2 shrink-0" />
+                    <div className="flex items-center gap-2 min-w-max">
+                        <input
+                            type="date"
+                            className="p-2 rounded-lg text-sm border-none focus:ring-0 text-gray-600 outline-none bg-transparent"
+                            value={dateRange.start}
+                            onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                        />
+                        <span className="text-gray-400">-</span>
+                        <input
+                            type="date"
+                            className="p-2 rounded-lg text-sm border-none focus:ring-0 text-gray-600 outline-none bg-transparent"
+                            value={dateRange.end}
+                            onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -75,15 +76,13 @@ const Revenue = () => {
                         <span className="font-medium opacity-90">Total Revenue</span>
                     </div>
                     <h3 className="text-3xl font-bold">{totalRevenue.toLocaleString()} PKR</h3>
-                    <p className="text-sm opacity-75 mt-1">{filteredOrders.length} Completed Orders</p>
+                    <p className="text-sm opacity-75 mt-1">{filteredOrdersCount} Completed Orders</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-center">
                     <p className="text-gray-500 text-sm font-medium mb-1">Average Order Value</p>
                     <h3 className="text-2xl font-bold text-gray-800">
-                        {filteredOrders.length > 0
-                            ? Math.round(totalRevenue / filteredOrders.length).toLocaleString()
-                            : 0} PKR
+                        {stats.averageOrderValue.toLocaleString()} PKR
                     </h3>
                 </div>
 
@@ -114,14 +113,14 @@ const Revenue = () => {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {dailyRevenue.length > 0 ? (
-                                dailyRevenue.map(([date, amount]) => (
-                                    <tr key={date} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{date}</td>
+                                dailyRevenue.map((item, idx) => (
+                                    <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.date}</td>
                                         <td className="px-6 py-4 text-sm text-gray-600">
-                                            {filteredOrders.filter(o => new Date(o.date).toLocaleDateString() === date).length}
+                                            {item.count}
                                         </td>
                                         <td className="px-6 py-4 text-sm font-bold text-green-600 text-right">
-                                            {amount.toLocaleString()} PKR
+                                            {item.amount.toLocaleString()} PKR
                                         </td>
                                     </tr>
                                 ))

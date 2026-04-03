@@ -4,7 +4,7 @@ import logo from '../assets/assets/images/recycle.png';
 
 const NotFound = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+    <div className="flex grow flex-col items-center justify-center bg-bg-light px-4 py-20">
       <img
         src={logo}
         alt="RecycoTrack"

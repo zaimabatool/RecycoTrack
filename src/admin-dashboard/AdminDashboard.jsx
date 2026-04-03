@@ -3,20 +3,31 @@ import { useData } from '../context/DataContext';
 import { FaShoppingCart, FaList, FaUsers, FaChartLine } from 'react-icons/fa';
 
 const AdminDashboard = () => {
-    const { rates, orders } = useData();
+    const { rates, orders, apiCall } = useData();
+    const [statsData, setStatsData] = React.useState({
+        totalOrders: 0,
+        activeRates: 0,
+        totalUsers: 0,
+        todayRevenue: 0
+    });
 
-    const todayRevenue = useMemo(() => {
-        const today = new Date().toLocaleDateString();
-        return orders
-            .filter(order => order.status === 'Completed' && new Date(order.date).toLocaleDateString() === today)
-            .reduce((sum, order) => sum + (parseFloat(order.amount) || 0), 0);
-    }, [orders]);
+    React.useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const data = await apiCall('/admin/dashboard');
+                setStatsData(data.stats);
+            } catch (err) {
+                console.error('Failed to fetch admin stats');
+            }
+        };
+        fetchStats();
+    }, [apiCall]);
 
     const stats = [
-        { label: 'Total Orders', value: orders.length, icon: <FaShoppingCart />, color: 'bg-blue-500' },
-        { label: 'Active Rates', value: rates.length, icon: <FaList />, color: 'bg-green-500' },
-        { label: 'Total Users', value: '1,234', icon: <FaUsers />, color: 'bg-purple-500' }, // Mock data
-        { label: "Today's Revenue", value: `${todayRevenue.toLocaleString()} PKR`, icon: <FaChartLine />, color: 'bg-orange-500' },
+        { label: 'Total Orders', value: statsData.totalOrders, icon: <FaShoppingCart />, color: 'bg-blue-500' },
+        { label: 'Active Rates', value: statsData.activeRates, icon: <FaList />, color: 'bg-green-500' },
+        { label: 'Total Users', value: statsData?.totalUsers || 0, icon: <FaUsers />, color: 'bg-purple-500' },
+        { label: "Today's Revenue", value: `${(statsData?.todayRevenue || 0).toLocaleString()} PKR`, icon: <FaChartLine />, color: 'bg-orange-500' },
     ];
 
     return (
@@ -56,7 +67,7 @@ const AdminDashboard = () => {
                             {orders.length > 0 ? (
                                 orders.map((order) => (
                                     <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">#{order.id}</td>
+                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">#{order.orderNumber || order.id}</td>
                                         <td className="px-6 py-4 text-sm text-gray-600">{order.customerName || 'Guest User'}</td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${order.status === 'Completed' ? 'bg-green-100 text-green-700' :

@@ -1,23 +1,21 @@
 import React from 'react';
 import { FaRocket, FaEye } from 'react-icons/fa';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import InfoCard from '../components/InfoCard';
 import logo from '../assets/assets/images/recycle.png';
 
 const AboutUs = () => {
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
-
+        <div className="bg-bg-light">
             {/* Hero Section */}
-            <div className="pt-[120px] pb-20 px-4 text-center bg-gradient-to-br from-primary to-[#0b8c80] text-white relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-                <div className="max-w-[1280px] mx-auto relative z-10">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">About RecycoTrack</h1>
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto opacity-90 font-light">
-                        Building a sustainable future through smart recycling solutions.
+            <div className="py-20 px-4 text-center bg-linear-to-br from-primary to-[#0b8c80] text-white relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-float"></div>
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 animate-float animation-delay-2000"></div>
+                <div className="max-w-[1280px] mx-auto relative z-10 animate-fade-in-up opacity-0">
+                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6 drop-shadow-lg">
+                        About <span className="text-accent">RecycoTrack</span>
+                    </h1>
+                    <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-medium leading-relaxed">
+                        Building a sustainable future through smart recycling solutions and AI-driven efficiency.
                     </p>
                 </div>
             </div>
@@ -80,7 +78,6 @@ const AboutUs = () => {
                 </div>
             </div>
 
-            <Footer />
         </div>
     );
 };

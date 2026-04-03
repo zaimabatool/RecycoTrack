@@ -1,151 +1,240 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 
 const DataContext = createContext();
 
 export const useData = () => useContext(DataContext);
 
+const API_URL = 'http://localhost:5000/api';
+
 export const DataProvider = ({ children }) => {
-    // Initial Rates Data
-    const initialRates = [
-        { id: 1, material: 'Plastic Bottles (PET)', category: 'Plastic', unit: 'kg', price: 45, trend: 'up', iconType: 'GiSodaCan', iconColor: 'text-blue-500' },
-        { id: 2, material: 'Newspaper', category: 'Paper', unit: 'kg', price: 25, trend: 'stable', iconType: 'GiNewspaper', iconColor: 'text-gray-500' },
-        { id: 3, material: 'Cardboard', category: 'Paper', unit: 'kg', price: 18, trend: 'down', iconType: 'GiCardboardBox', iconColor: 'text-yellow-600' },
-        { id: 4, material: 'Iron', category: 'Metal', unit: 'kg', price: 60, trend: 'up', iconType: 'GiMetalBar', iconColor: 'text-gray-700' },
-        { id: 5, material: 'Steel', category: 'Metal', unit: 'kg', price: 55, trend: 'stable', iconType: 'GiSteelClaws', iconColor: 'text-gray-400' },
-        { id: 6, material: 'Aluminium', category: 'Metal', unit: 'kg', price: 180, trend: 'up', iconType: 'BiCylinder', iconColor: 'text-gray-300' },
-        { id: 7, material: 'Copper', category: 'Metal', unit: 'kg', price: 750, trend: 'up', iconType: 'BiCylinder', iconColor: 'text-orange-500' },
-        { id: 8, material: 'Brass', category: 'Metal', unit: 'kg', price: 480, trend: 'down', iconType: 'BiCylinder', iconColor: 'text-yellow-500' },
-        { id: 9, material: 'E-Waste (Mixed)', category: 'E-Waste', unit: 'kg', price: 35, trend: 'stable', iconType: 'GiCircuitry', iconColor: 'text-green-600' },
-        { id: 10, material: 'Batteries', category: 'E-Waste', unit: 'kg', price: 90, trend: 'up', iconType: 'GiBatteryPack', iconColor: 'text-red-600' },
-        { id: 11, material: 'CPU Processor', category: 'E-Waste', unit: 'pc', price: 250, trend: 'stable', iconType: 'BsCpu', iconColor: 'text-blue-600' },
-    ];
+    const [rates, setRates] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [token, setToken] = useState(localStorage.getItem('recycotrack_token'));
+    const [loading, setLoading] = useState(true);
 
-    // Dummy Users
-    const initialUsers = [
-        { id: 1, name: 'Ali Khan', email: 'user@test.com', password: '123', phone: '03001234567' },
-        { id: 2, name: 'Admin User', email: 'admin@recycotrack.com', password: 'admin', role: 'admin' }
-    ];
+    // Helper for API calls
+    const apiCall = useCallback(async (endpoint, method = 'GET', body = null) => {
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
 
-    // Load from LocalStorage or use initial
-    const [rates, setRates] = useState(() => {
-        const savedRates = localStorage.getItem('rates');
-        return savedRates ? JSON.parse(savedRates) : initialRates;
-    });
+        const options = {
+            method,
+            headers,
+        };
+        if (body) {
+            options.body = JSON.stringify(body);
+        }
 
-    const [orders, setOrders] = useState(() => {
-        const savedOrders = localStorage.getItem('orders');
-        return savedOrders ? JSON.parse(savedOrders) : [];
-    });
+        try {
+            const response = await fetch(`${API_URL}${endpoint}`, options);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Something went wrong');
+            }
+            return data;
+        } catch (error) {
+            console.error(`API Error (${endpoint}):`, error.message);
+            throw error;
+        }
+    }, [token]);
 
-    const [history, setHistory] = useState(() => {
-        const savedHistory = localStorage.getItem('history');
-        return savedHistory ? JSON.parse(savedHistory) : [];
-    });
-
-    const [users, setUsers] = useState(() => {
-        const savedUsers = localStorage.getItem('users');
-        return savedUsers ? JSON.parse(savedUsers) : initialUsers;
-    });
-
-    const [currentUser, setCurrentUser] = useState(() => {
-        const savedUser = localStorage.getItem('currentUser');
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
-
-    // Save to LocalStorage whenever state changes
+    // Initialize: Fetch current user if token exists
     useEffect(() => {
-        localStorage.setItem('rates', JSON.stringify(rates));
-    }, [rates]);
+        const initAuth = async () => {
+            if (token) {
+                try {
+                    const data = await apiCall('/auth/me');
+                    setCurrentUser(data.user);
+                } catch (err) {
+                    console.error('Session expired or invalid token');
+                    localStorage.removeItem('recycotrack_token');
+                    setToken(null);
+                    setCurrentUser(null);
+                }
+            }
+            setLoading(false);
+        };
+        initAuth();
+    }, [token, apiCall]);
+
+    // Fetch Rates
+    const fetchRates = useCallback(async () => {
+        try {
+            const data = await apiCall('/rates');
+            setRates(data.rates);
+        } catch (err) {
+            console.error('Failed to fetch rates');
+        }
+    }, [apiCall]);
 
     useEffect(() => {
-        localStorage.setItem('orders', JSON.stringify(orders));
-    }, [orders]);
+        fetchRates();
+    }, [fetchRates]);
 
-    useEffect(() => {
-        localStorage.setItem('history', JSON.stringify(history));
-    }, [history]);
-
-    useEffect(() => {
-        localStorage.setItem('users', JSON.stringify(users));
-    }, [users]);
+    // Fetch Orders (Conditional based on role)
+    const fetchOrders = useCallback(async () => {
+        if (!currentUser) return;
+        try {
+            const endpoint = currentUser.role === 'admin' ? '/admin/orders' : '/orders/my';
+            const data = await apiCall(endpoint);
+            setOrders(data.orders);
+        } catch (err) {
+            console.error('Failed to fetch orders');
+        }
+    }, [currentUser, apiCall]);
 
     useEffect(() => {
         if (currentUser) {
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        } else {
-            localStorage.removeItem('currentUser');
+            fetchOrders();
         }
-    }, [currentUser]);
-
-    // Real-time Sync across tabs
-    useEffect(() => {
-        const handleStorageChange = (e) => {
-            if (e.key === 'rates') {
-                setRates(JSON.parse(e.newValue));
-            } else if (e.key === 'orders') {
-                setOrders(JSON.parse(e.newValue));
-            } else if (e.key === 'history') {
-                setHistory(JSON.parse(e.newValue));
-            } else if (e.key === 'users') {
-                setUsers(JSON.parse(e.newValue));
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, []);
-
-    // Actions
-    const addRate = (newRate) => {
-        setRates([...rates, { ...newRate, id: Date.now() }]);
-    };
-
-    const updateRate = (id, updatedRate) => {
-        setRates(rates.map(rate => rate.id === id ? { ...rate, ...updatedRate } : rate));
-    };
-
-    const deleteRate = (id) => {
-        setRates(rates.filter(rate => rate.id !== id));
-    };
-
-    const addOrder = (order) => {
-        setOrders([...orders, { ...order, id: Date.now(), status: 'Pending', date: new Date().toISOString() }]);
-    };
-
-    const updateOrderStatus = (id, status, updates = {}) => {
-        setOrders(orders.map(order => order.id === id ? { ...order, status, ...updates } : order));
-    };
+    }, [currentUser, fetchOrders]);
 
     // Auth Actions
-    const login = (email, password) => {
-        const user = users.find(u => u.email === email && u.password === password);
-        if (user) {
-            setCurrentUser(user);
-            return { success: true, user };
+    const login = async (email, password) => {
+        try {
+            const data = await apiCall('/auth/login', 'POST', { email, password });
+            localStorage.setItem('recycotrack_token', data.token);
+            setToken(data.token);
+            setCurrentUser(data.user);
+            return { success: true, user: data.user };
+        } catch (err) {
+            return { success: false, message: err.message };
         }
-        return { success: false, message: 'Invalid email or password' };
     };
 
     const logout = () => {
+        localStorage.removeItem('recycotrack_token');
+        setToken(null);
         setCurrentUser(null);
+        setOrders([]);
     };
 
-    const register = (newUser) => {
-        if (users.find(u => u.email === newUser.email)) {
-            return { success: false, message: 'Email already exists' };
+    const updateProfile = async (userData) => {
+        try {
+            const data = await apiCall('/auth/profile', 'PUT', userData);
+            setCurrentUser(data.user);
+            return { success: true, user: data.user };
+        } catch (err) {
+            return { success: false, message: err.message };
         }
-        const user = { ...newUser, id: Date.now() };
-        setUsers([...users, user]);
-        setCurrentUser(user);
-        return { success: true };
+    };
+
+    const register = async (newUser) => {
+        try {
+            const data = await apiCall('/auth/register', 'POST', newUser);
+            localStorage.setItem('recycotrack_token', data.token);
+            setToken(data.token);
+            setCurrentUser(data.user);
+            return { success: true };
+        } catch (err) {
+            return { success: false, message: err.message };
+        }
+    };
+
+    // Rate Actions (Admin)
+    const addRate = async (newRate) => {
+        try {
+            await apiCall('/rates', 'POST', newRate);
+            fetchRates();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const updateRate = async (id, updatedRate) => {
+        try {
+            await apiCall(`/rates/${id}`, 'PUT', updatedRate);
+            fetchRates();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const deleteRate = async (id) => {
+        try {
+            await apiCall(`/rates/${id}`, 'DELETE');
+            fetchRates();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    // Order Actions
+    const addOrder = async (order) => {
+        try {
+            await apiCall('/orders', 'POST', order);
+            fetchOrders();
+            return { success: true };
+        } catch (err) {
+            return { success: false, message: err.message };
+        }
+    };
+
+    const updateOrderStatus = async (id, status, updates = {}) => {
+        try {
+            // Check if it's a schedule action
+            if (status === 'Scheduled' && updates.pickupTime) {
+                // The pickupTime is already formatted by the frontend logic in Orders.jsx
+                // However, the backend /admin/orders/:id/schedule expects separate date/time fields.
+                // Let's check how the frontend currently sends it.
+            }
+
+            // For simplicity, we'll try to find a specialized endpoint or use the generic status update
+            await apiCall(`/admin/orders/${id}/status`, 'PUT', { status, ...updates });
+            fetchOrders();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    // Admin Specialized Actions
+    const scheduleOrder = async (id, scheduleData) => {
+        try {
+            await apiCall(`/admin/orders/${id}/schedule`, 'PUT', scheduleData);
+            fetchOrders();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const finalizeOrder = async (id, finalizeData) => {
+        try {
+            await apiCall(`/admin/orders/${id}/finalize`, 'PUT', finalizeData);
+            fetchOrders();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const acceptOrderProposal = async (id) => {
+        try {
+            await apiCall(`/orders/${id}/accept-proposal`, 'PUT');
+            fetchOrders();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const rejectOrderProposal = async (id) => {
+        try {
+            await apiCall(`/orders/${id}/reject-proposal`, 'PUT');
+            fetchOrders();
+        } catch (err) {
+            alert(err.message);
+        }
     };
 
     return (
         <DataContext.Provider value={{
-            rates, addRate, updateRate, deleteRate,
-            orders, addOrder, updateOrderStatus,
-            history,
-            currentUser, login, logout, register, users
+            rates, addRate, updateRate, deleteRate, fetchRates,
+            orders, addOrder, updateOrderStatus, fetchOrders,
+            scheduleOrder, finalizeOrder, acceptOrderProposal, rejectOrderProposal,
+            currentUser, login, logout, register, updateProfile, loading, apiCall
         }}>
             {children}
         </DataContext.Provider>
