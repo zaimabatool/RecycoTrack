@@ -17,6 +17,8 @@ const UploadScrap = () => {
     const [step, setStep] = useState(1); // 1: Input, 2: Payment
     const [loading, setLoading] = useState(false);
     const [image, setImage] = useState(null);
+    const [aiMaterialId, setAiMaterialId] = useState(''); // New state for AI mode material
+    const [aiWeight, setAiWeight] = useState(''); // New state for AI mode weight
     const [detectedItems, setDetectedItems] = useState([]);
 
     // Manual Form State
@@ -41,16 +43,22 @@ const UploadScrap = () => {
     };
 
     const handleAnalyze = () => {
-        if (!image) return;
+        if (!image || !aiMaterialId) return;
         setLoading(true);
         // Simulate AI Analysis
         setTimeout(() => {
             setLoading(false);
-            // Mock detected items based on random selection from available rates
-            const randomRate = rates[Math.floor(Math.random() * rates.length)];
+            // Use the user-selected material
+            const selectedRate = rates.find(r => r.id === aiMaterialId);
+            
+            // Random quality levels
+            const qualities = ['A Grade', 'B Grade', 'Standard', 'Premium'];
+            const randomQuality = qualities[Math.floor(Math.random() * qualities.length)];
+
             setDetectedItems([{
-                ...randomRate,
-                detectedWeight: (Math.random() * 10 + 1).toFixed(1), // Random weight 1-10kg
+                ...selectedRate,
+                quality: randomQuality,
+                detectedWeight: aiWeight || (Math.random() * 10 + 1).toFixed(1), // Use manual weight if provided
                 confidence: 98
             }]);
         }, 2000);
@@ -133,6 +141,39 @@ const UploadScrap = () => {
                         <div className="p-8">
                             {mode === 'ai' ? (
                                 <div className="space-y-6">
+                                    {/* Material and Weight Selection for AI */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Select Material</label>
+                                            <select
+                                                className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-gray-50"
+                                                value={aiMaterialId}
+                                                onChange={(e) => {
+                                                    setAiMaterialId(e.target.value);
+                                                    setDetectedItems([]); // Reset results if material changes
+                                                }}
+                                            >
+                                                <option value="">-- Choose Material --</option>
+                                                {rates.map(r => (
+                                                    <option key={r.id} value={r.id}>{r.material}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Weight (kg/qty)</label>
+                                            <input
+                                                type="number"
+                                                className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-gray-50"
+                                                placeholder="e.g. 5 (Optional)"
+                                                value={aiWeight}
+                                                onChange={(e) => {
+                                                    setAiWeight(e.target.value);
+                                                    setDetectedItems([]); // Reset results if weight changes
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+
                                     <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-primary transition-colors bg-gray-50">
                                         {image ? (
                                             <div className="relative">
@@ -157,10 +198,10 @@ const UploadScrap = () => {
                                     {image && !detectedItems.length && (
                                         <button
                                             onClick={handleAnalyze}
-                                            disabled={loading}
-                                            className="w-full py-4 bg-secondary text-white rounded-xl font-bold hover:bg-secondary/90 transition-all flex justify-center items-center gap-2"
+                                            disabled={loading || !aiMaterialId}
+                                            className="w-full py-4 bg-secondary text-white rounded-xl font-bold hover:bg-secondary/90 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            {loading ? 'Analyzing...' : <><FaMagic /> Analyze Scrap</>}
+                                            {loading ? 'Analyzing...' : <><FaMagic /> Analyze Quality</>}
                                         </button>
                                     )}
 
@@ -172,7 +213,10 @@ const UploadScrap = () => {
                                                     <div key={idx} className="flex justify-between items-center">
                                                         <div>
                                                             <p className="font-bold text-gray-800">{item.material}</p>
-                                                            <p className="text-sm text-gray-500">{item.detectedWeight} {item.unit} @ {item.price} PKR</p>
+                                                            <div className="flex gap-2 items-center mt-1">
+                                                                <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded-full">{item.quality}</span>
+                                                                <p className="text-sm text-gray-500">{item.detectedWeight} {item.unit} @ {item.price} PKR</p>
+                                                            </div>
                                                         </div>
                                                         <div className="text-right">
                                                             <p className="font-bold text-primary text-xl">
