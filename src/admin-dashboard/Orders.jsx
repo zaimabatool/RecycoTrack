@@ -3,14 +3,15 @@ import { useData } from '../context/DataContext';
 import { FaCalendarAlt, FaClock, FaEye, FaCheckDouble, FaTimes } from 'react-icons/fa';
 
 const Orders = () => {
-    const { orders, updateOrderStatus, scheduleOrder, finalizeOrder } = useData();
+    const { orders, updateOrderStatus, scheduleOrder, finalizeOrder, riders } = useData();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedOrderId, setSelectedOrderId] = useState(null);
     const [scheduleData, setScheduleData] = useState({
         startDate: '',
         endDate: '',
         startTime: '',
-        endTime: ''
+        endTime: '',
+        riderId: ''
     });
 
     // Negotiation State
@@ -31,7 +32,7 @@ const Orders = () => {
         e.preventDefault();
         await scheduleOrder(selectedOrderId, scheduleData);
         setIsModalOpen(false);
-        setScheduleData({ startDate: '', endDate: '', startTime: '', endTime: '' });
+        setScheduleData({ startDate: '', endDate: '', startTime: '', endTime: '', riderId: '' });
     };
 
     const openFinalizeModal = (order) => {
@@ -234,6 +235,25 @@ const Orders = () => {
                                     />
                                 </div>
                             </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Assign Rider</label>
+                                <select
+                                    required
+                                    className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white font-bold"
+                                    value={scheduleData.riderId}
+                                    onChange={(e) => setScheduleData({ ...scheduleData, riderId: e.target.value })}
+                                >
+                                    <option value="">Select a Rider</option>
+                                    {riders.map(rider => (
+                                        <option key={rider.id} value={rider.id}>{rider.name} ({rider.phone || 'No phone'})</option>
+                                    ))}
+                                </select>
+                                <p className="text-[10px] text-gray-400 mt-1 italic pl-1">
+                                    Only the assigned rider will be able to see and finalize this pickup.
+                                </p>
+                            </div>
+
                             <div className="flex gap-3 mt-6">
                                 <button
                                     type="button"

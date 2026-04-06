@@ -5,7 +5,7 @@ import { FaBoxOpen, FaCheckCircle, FaClock, FaTimesCircle, FaTruck, FaExclamatio
 
 const UserOrders = () => {
     const navigate = useNavigate();
-    const { orders, currentUser, acceptOrderProposal, rejectOrderProposal } = useData();
+    const { orders, currentUser, acceptOrderProposal, rejectOrderProposal, cancelUserOrder } = useData();
 
     const handleAcceptProposal = async (orderId) => {
         await acceptOrderProposal(orderId);
@@ -13,6 +13,40 @@ const UserOrders = () => {
 
     const handleRejectProposal = async (orderId) => {
         await rejectOrderProposal(orderId);
+    };
+
+    const handleCancelOrder = async (orderId) => {
+        if (window.confirm('Are you sure you want to cancel this order?')) {
+            await cancelUserOrder(orderId);
+        }
+    };
+
+    const canCancelOrder = (order) => {
+        if (order.status === 'Pending') return true;
+        if (order.status === 'Scheduled' && order.pickupTime) {
+            try {
+                const parts = order.pickupTime.split(',');
+                if (parts.length >= 2) {
+                    const dateRange = parts[0].trim();
+                    const timeStr = parts[1].trim();
+                    const startDateStr = dateRange.split('-')[0].trim();
+                    const startTimeStr = timeStr.split('to')[0].trim();
+                    
+                    if (startDateStr && startTimeStr) {
+                        const currentYear = new Date().getFullYear();
+                        const scheduledDate = new Date(`${startDateStr} ${currentYear} ${startTimeStr}`);
+                        if (new Date().getTime() - scheduledDate.getTime() > 1000 * 60 * 60 * 24 * 180) {
+                            scheduledDate.setFullYear(currentYear + 1);
+                        }
+                        const hoursUntilPickup = (scheduledDate.getTime() - new Date().getTime()) / (1000 * 60 * 60);
+                        return hoursUntilPickup >= 5;
+                    }
+                }
+            } catch (e) {
+                return false;
+            }
+        }
+        return false;
     };
 
     // Redirect if not logged in
@@ -106,6 +140,18 @@ const UserOrders = () => {
                                             }`}
                                     ></div>
                                 </div>
+
+                                {/* Cancel Order Action */}
+                                {canCancelOrder(order) && (
+                                    <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                                        <button
+                                            onClick={() => handleCancelOrder(order.id)}
+                                            className="text-red-500 hover:text-red-700 font-bold text-sm flex items-center gap-2 transition-colors px-4 py-2 rounded-lg hover:bg-red-50"
+                                        >
+                                            <FaTimesCircle /> Cancel Order
+                                        </button>
+                                    </div>
+                                )}
 
                                 {/* Price Proposal Alert */}
                                 {order.status === 'Price Proposed' && (

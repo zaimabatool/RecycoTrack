@@ -332,11 +332,22 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    const cancelUserOrder = async (id) => {
+        try {
+            await apiCall(`/orders/${id}/cancel`, 'PUT');
+            fetchOrders();
+            return { success: true };
+        } catch (err) {
+            alert(err.message);
+            return { success: false, message: err.message };
+        }
+    };
+
     return (
         <DataContext.Provider value={{
             rates, addRate, updateRate, deleteRate, fetchRates,
             orders, addOrder, updateOrderStatus, fetchOrders,
-            scheduleOrder, finalizeOrder, acceptOrderProposal, rejectOrderProposal,
+            scheduleOrder, finalizeOrder, acceptOrderProposal, rejectOrderProposal, cancelUserOrder,
             riders, addRider, updateRider, deleteRider, fetchRiders,
             users, addUser, updateUser, deleteUser, fetchUsers,
             currentUser, login, logout, register, updateProfile, loading, apiCall
