@@ -14,11 +14,13 @@ const ManageRates = () => {
         price: '',
         trend: 'stable',
         iconType: 'GiMetalBar',
-        iconColor: 'text-gray-500'
+        iconColor: 'text-gray-500',
+        minGrade: 'Poor'
     });
 
     const categories = ['Metal', 'Plastic', 'Paper', 'E-Waste'];
     const trends = ['up', 'down', 'stable'];
+    const grades = ['Premium', 'A Grade', 'B Grade', 'Standard', 'Poor'];
 
     const handleOpenModal = (rate = null) => {
         if (rate) {
@@ -33,7 +35,8 @@ const ManageRates = () => {
                 price: '',
                 trend: 'stable',
                 iconType: 'GiMetalBar',
-                iconColor: 'text-gray-500'
+                iconColor: 'text-gray-500',
+                minGrade: 'Poor'
             });
         }
         setIsModalOpen(true);
@@ -77,6 +80,7 @@ const ManageRates = () => {
                                 <th className="px-6 py-4">Price (PKR)</th>
                                 <th className="px-6 py-4">Unit</th>
                                 <th className="px-6 py-4">Trend</th>
+                                <th className="px-6 py-4">Min Grade</th>
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -97,6 +101,11 @@ const ManageRates = () => {
                                                     'bg-gray-100 text-gray-600'
                                             }`}>
                                             {rate.trend.toUpperCase()}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className="px-2 py-0.5 bg-secondary/10 text-secondary rounded-full text-xs font-bold">
+                                            {rate.minGrade || 'Poor'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right space-x-2">
@@ -189,6 +198,20 @@ const ManageRates = () => {
                                         {trends.map(t => <option key={t} value={t}>{t}</option>)}
                                     </select>
                                 </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Quality Grade Required</label>
+                                <select
+                                    className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    value={formData.minGrade || 'Poor'}
+                                    onChange={(e) => setFormData({ ...formData, minGrade: e.target.value })}
+                                >
+                                    {grades.map(g => <option key={g} value={g}>{g}</option>)}
+                                </select>
+                                <p className="text-xs text-gray-500 mt-1 italic">
+                                    Users will be blocked from selling items below this grade.
+                                </p>
                             </div>
 
                             <div className="pt-4">

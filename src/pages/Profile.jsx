@@ -9,7 +9,7 @@ const Profile = () => {
     const location = useLocation();
     const { currentUser, updateProfile } = useData();
 
-    const isAdminContext = location.pathname.startsWith('/admin');
+    const isDashboardContext = location.pathname.startsWith('/admin') || location.pathname.startsWith('/rider');
     const pickerRef = useRef(null);
 
     const [formData, setFormData] = useState({
@@ -86,12 +86,12 @@ const Profile = () => {
     return (
         <div className={`
             bg-[#f0f9f8] min-h-[calc(100vh-70px)] pb-20 px-4 font-sans overflow-x-hidden
-            ${isAdminContext ? 'pt-0 bg-transparent min-h-0' : 'pt-16'}
+            ${isDashboardContext ? 'pt-0 bg-transparent min-h-0' : 'pt-16'}
         `}>
-            <div className={`max-w-[1280px] mx-auto space-y-12 animate-fade-in-up ${isAdminContext ? 'mt-4' : ''}`}>
+            <div className={`max-w-[1280px] mx-auto space-y-12 animate-fade-in-up ${isDashboardContext ? 'mt-4' : ''}`}>
                 
                 {/* Header Section */}
-                {!isAdminContext && (
+                {!isDashboardContext && (
                     <div className="flex items-center justify-between px-4">
                         <div className="animate-fade-in-left">
                             <button 
@@ -350,7 +350,7 @@ const Profile = () => {
                 </div>
 
                 {/* Info Cards Grid */}
-                {!isAdminContext && (
+                {!isDashboardContext && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
                         <div className="bg-white/60 backdrop-blur-sm p-8 rounded-[2.5rem] border border-white shadow-xl shadow-gray-200/40 flex items-center gap-6 group hover:-translate-y-1 transition-all duration-300">
                             <div className="w-16 h-16 rounded-3xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl group-hover:rotate-6 transition-transform shadow-inner">

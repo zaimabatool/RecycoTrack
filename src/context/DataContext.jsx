@@ -9,6 +9,8 @@ const API_URL = 'http://localhost:5000/api';
 export const DataProvider = ({ children }) => {
     const [rates, setRates] = useState([]);
     const [orders, setOrders] = useState([]);
+    const [riders, setRiders] = useState([]);
+    const [users, setUsers] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('recycotrack_token'));
     const [loading, setLoading] = useState(true);
@@ -72,15 +74,13 @@ export const DataProvider = ({ children }) => {
         }
     }, [apiCall]);
 
-    useEffect(() => {
-        fetchRates();
-    }, [fetchRates]);
-
     // Fetch Orders (Conditional based on role)
     const fetchOrders = useCallback(async () => {
         if (!currentUser) return;
         try {
-            const endpoint = currentUser.role === 'admin' ? '/admin/orders' : '/orders/my';
+            const endpoint = (currentUser.role === 'admin' || currentUser.role === 'rider')
+                ? '/admin/orders'
+                : '/orders/my';
             const data = await apiCall(endpoint);
             setOrders(data.orders);
         } catch (err) {
@@ -88,11 +88,41 @@ export const DataProvider = ({ children }) => {
         }
     }, [currentUser, apiCall]);
 
+    // Rider Management (Admin)
+    const fetchRiders = useCallback(async () => {
+        if (!currentUser || currentUser.role !== 'admin') return;
+        try {
+            const data = await apiCall('/admin/riders');
+            setRiders(data.riders);
+        } catch (err) {
+            console.error('Failed to fetch riders');
+        }
+    }, [currentUser, apiCall]);
+
+    // User Management (Admin)
+    const fetchUsers = useCallback(async () => {
+        if (!currentUser || currentUser.role !== 'admin') return;
+        try {
+            const data = await apiCall('/admin/users');
+            setUsers(data.users);
+        } catch (err) {
+            console.error('Failed to fetch users');
+        }
+    }, [currentUser, apiCall]);
+
+    useEffect(() => {
+        fetchRates();
+    }, [fetchRates]);
+
     useEffect(() => {
         if (currentUser) {
             fetchOrders();
+            if (currentUser.role === 'admin') {
+                fetchRiders();
+                fetchUsers();
+            }
         }
-    }, [currentUser, fetchOrders]);
+    }, [currentUser, fetchOrders, fetchRiders, fetchUsers]);
 
     // Auth Actions
     const login = async (email, password) => {
@@ -112,6 +142,8 @@ export const DataProvider = ({ children }) => {
         setToken(null);
         setCurrentUser(null);
         setOrders([]);
+        setRiders([]);
+        setUsers([]);
     };
 
     const updateProfile = async (userData) => {
@@ -164,6 +196,86 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    // Rider Management Actions
+    const addRider = async (riderData) => {
+        try {
+            const data = await apiCall('/admin/riders', 'POST', riderData);
+            if (data.success) {
+                setRiders(prev => [data.rider, ...prev]);
+                return { success: true };
+            }
+            return { success: false, message: data.message };
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    const updateRider = async (id, riderData) => {
+        try {
+            const data = await apiCall(`/admin/riders/${id}`, 'PUT', riderData);
+            if (data.success) {
+                setRiders(prev => prev.map(r => r.id === id ? data.rider : r));
+                return { success: true };
+            }
+            return { success: false, message: data.message };
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    const deleteRider = async (riderId) => {
+        try {
+            const data = await apiCall(`/admin/riders/${riderId}`, 'DELETE');
+            if (data.success) {
+                setRiders(prev => prev.filter(r => r.id !== riderId));
+                return { success: true };
+            }
+            return { success: false, message: data.message };
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    // User Management Actions
+    const addUser = async (userData) => {
+        try {
+            const data = await apiCall('/admin/users', 'POST', userData);
+            if (data.success) {
+                setUsers(prev => [data.user, ...prev]);
+                return { success: true };
+            }
+            return { success: false, message: data.message };
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    const updateUser = async (id, userData) => {
+        try {
+            const data = await apiCall(`/admin/users/${id}`, 'PUT', userData);
+            if (data.success) {
+                setUsers(prev => prev.map(u => u.id === id ? data.user : u));
+                return { success: true };
+            }
+            return { success: false, message: data.message };
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    const deleteUser = async (userId) => {
+        try {
+            const data = await apiCall(`/admin/users/${userId}`, 'DELETE');
+            if (data.success) {
+                setUsers(prev => prev.filter(u => u.id !== userId));
+                return { success: true };
+            }
+            return { success: false, message: data.message };
+        } catch (err) {
+            throw err;
+        }
+    };
+
     // Order Actions
     const addOrder = async (order) => {
         try {
@@ -177,14 +289,6 @@ export const DataProvider = ({ children }) => {
 
     const updateOrderStatus = async (id, status, updates = {}) => {
         try {
-            // Check if it's a schedule action
-            if (status === 'Scheduled' && updates.pickupTime) {
-                // The pickupTime is already formatted by the frontend logic in Orders.jsx
-                // However, the backend /admin/orders/:id/schedule expects separate date/time fields.
-                // Let's check how the frontend currently sends it.
-            }
-
-            // For simplicity, we'll try to find a specialized endpoint or use the generic status update
             await apiCall(`/admin/orders/${id}/status`, 'PUT', { status, ...updates });
             fetchOrders();
         } catch (err) {
@@ -192,7 +296,6 @@ export const DataProvider = ({ children }) => {
         }
     };
 
-    // Admin Specialized Actions
     const scheduleOrder = async (id, scheduleData) => {
         try {
             await apiCall(`/admin/orders/${id}/schedule`, 'PUT', scheduleData);
@@ -234,6 +337,8 @@ export const DataProvider = ({ children }) => {
             rates, addRate, updateRate, deleteRate, fetchRates,
             orders, addOrder, updateOrderStatus, fetchOrders,
             scheduleOrder, finalizeOrder, acceptOrderProposal, rejectOrderProposal,
+            riders, addRider, updateRider, deleteRider, fetchRiders,
+            users, addUser, updateUser, deleteUser, fetchUsers,
             currentUser, login, logout, register, updateProfile, loading, apiCall
         }}>
             {children}

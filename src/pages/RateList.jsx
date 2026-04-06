@@ -105,6 +105,7 @@ const RateList = () => {
                       <th className="py-5 px-6 font-bold text-sm uppercase tracking-wider rounded-tl-xl">Material</th>
                       <th className="py-5 px-6 font-bold text-sm uppercase tracking-wider">Category</th>
                       <th className="py-5 px-6 font-bold text-sm uppercase tracking-wider">Price</th>
+                      <th className="py-5 px-6 font-bold text-sm uppercase tracking-wider">Min Grade</th>
                       <th className="py-5 px-6 font-bold text-sm uppercase tracking-wider rounded-tr-xl">Trend</th>
                     </tr>
                   </thead>
@@ -130,6 +131,11 @@ const RateList = () => {
                             <span className="text-xs text-gray-500 ml-1">PKR / {item.unit}</span>
                           </td>
                           <td className="py-4 px-6">
+                            <span className="px-2 py-1 bg-secondary/10 text-secondary rounded-full text-xs font-bold">
+                              {item.minGrade || 'Poor'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6">
                             {item.trend === 'up' && <span className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full text-xs font-bold w-fit">▲ Up</span>}
                             {item.trend === 'down' && <span className="flex items-center gap-1 text-red-600 bg-red-50 px-2 py-1 rounded-full text-xs font-bold w-fit">▼ Down</span>}
                             {item.trend === 'stable' && <span className="flex items-center gap-1 text-gray-600 bg-gray-50 px-2 py-1 rounded-full text-xs font-bold w-fit">• Stable</span>}
@@ -138,7 +144,7 @@ const RateList = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="py-8 text-center text-gray-500">
+                        <td colSpan="5" className="py-8 text-center text-gray-500">
                           No materials found matching your search.
                         </td>
                       </tr>

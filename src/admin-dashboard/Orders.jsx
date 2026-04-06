@@ -115,6 +115,13 @@ const Orders = () => {
                                                 {order.status === 'Scheduled' && (
                                                     <div className="flex gap-1">
                                                         <button
+                                                            onClick={() => { setSelectedOrderId(order.id); setIsModalOpen(true); }}
+                                                            className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+                                                            title="Reschedule Pickup"
+                                                        >
+                                                            <FaCalendarAlt />
+                                                        </button>
+                                                        <button
                                                             onClick={() => openFinalizeModal(order)}
                                                             className="text-xs bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors whitespace-nowrap"
                                                         >
@@ -179,7 +186,8 @@ const Orders = () => {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
                         <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <FaCalendarAlt className="text-primary" /> Schedule Pickup
+                            <FaCalendarAlt className="text-primary" /> 
+                            {orders.find(o => o.id === selectedOrderId)?.status === 'Scheduled' ? 'Reschedule Pickup' : 'Schedule Pickup'}
                         </h3>
                         <form onSubmit={handleScheduleSubmit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
@@ -238,7 +246,7 @@ const Orders = () => {
                                     type="submit"
                                     className="flex-1 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark shadow-lg shadow-primary/30"
                                 >
-                                    Confirm Schedule
+                                    {orders.find(o => o.id === selectedOrderId)?.status === 'Scheduled' ? 'Confirm New Schedule' : 'Confirm Schedule'}
                                 </button>
                             </div>
                         </form>
@@ -262,14 +270,18 @@ const Orders = () => {
                             </h3>
 
                             <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-gray-50 p-3 rounded-xl">
-                                        <p className="text-xs text-gray-500">Customer</p>
-                                        <p className="font-bold text-gray-800">{viewOrder.customerName}</p>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 flex flex-col justify-center">
+                                        <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Customer</p>
+                                        <p className="font-extrabold text-gray-800 truncate">{viewOrder.customerName}</p>
                                     </div>
-                                    <div className="bg-gray-50 p-3 rounded-xl">
-                                        <p className="text-xs text-gray-500">Date</p>
-                                        <p className="font-bold text-gray-800">{new Date(viewOrder.date).toLocaleDateString()}</p>
+                                    <div className="bg-primary/5 p-3 rounded-xl border border-primary/10 flex flex-col justify-center">
+                                        <p className="text-[10px] uppercase font-bold text-primary tracking-wider">Phone Number</p>
+                                        <p className="font-extrabold text-secondary tracking-tight">{viewOrder.customerPhone || 'N/A'}</p>
+                                    </div>
+                                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 flex flex-col justify-center">
+                                        <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Date</p>
+                                        <p className="font-extrabold text-gray-800">{new Date(viewOrder.date).toLocaleDateString()}</p>
                                     </div>
                                 </div>
 

@@ -1,32 +1,26 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaList, FaShoppingCart, FaHistory, FaSignOutAlt, FaChartLine, FaBars, FaUsers } from 'react-icons/fa';
+import { FaShoppingCart, FaUserEdit, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import { useData } from '../context/DataContext';
 import { renderAvatar } from '../utils/avatarHelper';
 
-const AdminLayout = () => {
+const RiderLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { currentUser, logout } = useData();
 
-    // Protect Admin Route
+    // Protect Rider Route
     React.useEffect(() => {
-        if (!currentUser || currentUser.role !== 'admin') {
+        if (!currentUser || currentUser.role !== 'rider') {
             navigate('/login');
         }
     }, [currentUser, navigate]);
 
-    if (!currentUser || currentUser.role !== 'admin') return null;
+    if (!currentUser || currentUser.role !== 'rider') return null;
 
     const menuItems = [
-        { path: '/admin', label: 'Dashboard', icon: <FaTachometerAlt /> },
-        { path: '/admin/rates', label: 'Manage Rates', icon: <FaList /> },
-        { path: '/admin/orders', label: 'Orders', icon: <FaShoppingCart /> },
-        { path: '/admin/riders', label: 'Manage Riders', icon: <FaBars /> },
-        { path: '/admin/users', label: 'Manage Customers', icon: <FaUsers /> },
-        { path: '/admin/revenue', label: 'Revenue', icon: <FaChartLine /> },
-        { path: '/admin/history', label: 'History', icon: <FaHistory /> },
-        { path: '/admin/profile', label: 'Profile', icon: <FaList /> },
+        { path: '/rider', label: 'My Pickups', icon: <FaShoppingCart /> },
+        { path: '/rider/profile', label: 'Edit Profile', icon: <FaUserEdit /> },
     ];
 
     const handleLogout = () => {
@@ -40,8 +34,6 @@ const AdminLayout = () => {
     React.useEffect(() => {
         setIsSidebarOpen(false);
     }, [location.pathname]);
-
-    // Protect Admin Route... (rest of logic same)
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -64,7 +56,7 @@ const AdminLayout = () => {
                 <div className="p-6 border-b border-white/10 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-white shadow-lg">R</div>
-                        <h1 className="text-xl font-bold tracking-wide">RecycoAdmin</h1>
+                        <h1 className="text-xl font-bold tracking-wide">RiderPanel</h1>
                     </div>
                     {/* Close button for mobile */}
                     <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-white/60 hover:text-white">
@@ -77,7 +69,7 @@ const AdminLayout = () => {
                         <button
                             key={item.path}
                             onClick={() => navigate(item.path)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path))
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${location.pathname === item.path || (item.path !== '/rider' && location.pathname.startsWith(item.path))
                                 ? 'bg-primary text-white shadow-lg shadow-primary/30'
                                 : 'text-gray-300 hover:bg-white/10 hover:text-white'
                                 }`}
@@ -112,17 +104,17 @@ const AdminLayout = () => {
                             <FaBars className="text-xl" />
                         </button>
                         <h2 className="text-lg lg:text-xl font-bold text-gray-800 truncate max-w-[150px] md:max-w-none">
-                            {menuItems.find(item => item.path === location.pathname)?.label || 'Admin Panel'}
+                            {menuItems.find(item => item.path === location.pathname)?.label || 'Rider Dashboard'}
                         </h2>
                     </div>
 
                     <div 
-                        onClick={() => navigate('/admin/profile')}
+                        onClick={() => navigate('/rider/profile')}
                         className="flex items-center gap-3 lg:gap-4 hover:bg-gray-50 p-1.5 rounded-2xl cursor-pointer transition-all group"
                     >
                         <div className="text-right hidden sm:block">
                             <p className="text-sm font-bold text-gray-700 leading-tight group-hover:text-primary transition-colors">{currentUser.name}</p>
-                            <p className="text-[10px] lg:text-xs text-gray-500">{currentUser.email}</p>
+                            <p className="text-[10px] lg:text-xs text-gray-500">Rider Account</p>
                         </div>
                         <div className="w-9 h-9 lg:w-10 lg:h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold border border-primary/20 shadow-sm text-lg group-hover:scale-105 transition-transform">
                             {renderAvatar(currentUser.avatar)}
@@ -139,4 +131,4 @@ const AdminLayout = () => {
     );
 };
 
-export default AdminLayout;
+export default RiderLayout;

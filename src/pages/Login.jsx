@@ -17,6 +17,8 @@ const Login = () => {
     if (result.success) {
       if (result.user.role === 'admin') {
         navigate('/admin');
+      } else if (result.user.role === 'rider') {
+        navigate('/rider');
       } else {
         navigate('/');
       }

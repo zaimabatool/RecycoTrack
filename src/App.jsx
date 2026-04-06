@@ -22,8 +22,14 @@ import AdminLayout from './admin-dashboard/AdminLayout';
 import AdminDashboard from './admin-dashboard/AdminDashboard';
 import ManageRates from './admin-dashboard/ManageRates';
 import Orders from './admin-dashboard/Orders';
+import ManageRiders from './admin-dashboard/ManageRiders';
+import ManageUsers from './admin-dashboard/ManageUsers';
 import History from './admin-dashboard/History';
 import Revenue from './admin-dashboard/Revenue';
+
+// Rider Components
+import RiderLayout from './rider-dashboard/RiderLayout';
+import RiderOrders from './rider-dashboard/RiderOrders';
 
 function App() {
   const { loading } = useData();
@@ -57,8 +63,16 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="rates" element={<ManageRates />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="riders" element={<ManageRiders />} />
+          <Route path="users" element={<ManageUsers />} />
           <Route path="revenue" element={<Revenue />} />
           <Route path="history" element={<History />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
+        {/* Rider Routes with Private Layout */}
+        <Route path="/rider" element={<RiderLayout />}>
+          <Route index element={<RiderOrders />} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>

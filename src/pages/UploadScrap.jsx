@@ -17,9 +17,19 @@ const UploadScrap = () => {
     const [step, setStep] = useState(1); // 1: Input, 2: Payment
     const [loading, setLoading] = useState(false);
     const [image, setImage] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null); // Store the actual File object
     const [aiMaterialId, setAiMaterialId] = useState(''); // New state for AI mode material
-    const [aiWeight, setAiWeight] = useState(''); // New state for AI mode weight
     const [detectedItems, setDetectedItems] = useState([]);
+    const [phoneNumber, setPhoneNumber] = useState(currentUser?.phone || '');
+
+    const GRADE_RANKS = {
+        'Premium': 4,
+        'A Grade': 3,
+        'B Grade': 2,
+        'Standard': 1,
+        'Poor': 0,
+        'N/A': -1
+    };
 
     // Manual Form State
     const [manualData, setManualData] = useState({
@@ -37,36 +47,89 @@ const UploadScrap = () => {
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
+            setSelectedFile(file);
             setImage(URL.createObjectURL(file));
             setDetectedItems([]); // Reset previous detection
         }
     };
 
-    const handleAnalyze = () => {
-        if (!image || !aiMaterialId) return;
+    const handleAnalyze = async () => {
+        if (!selectedFile) return;
         setLoading(true);
-        // Simulate AI Analysis
-        setTimeout(() => {
-            setLoading(false);
-            // Use the user-selected material
-            const selectedRate = rates.find(r => r.id === aiMaterialId);
-            
-            // Random quality levels
-            const qualities = ['A Grade', 'B Grade', 'Standard', 'Premium'];
-            const randomQuality = qualities[Math.floor(Math.random() * qualities.length)];
 
-            setDetectedItems([{
-                ...selectedRate,
-                quality: randomQuality,
-                detectedWeight: aiWeight || (Math.random() * 10 + 1).toFixed(1), // Use manual weight if provided
-                confidence: 98
-            }]);
-        }, 2000);
+        // Get all available material names from our rates list
+        const availableMaterials = rates.map(r => r.material);
+
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+        formData.append('availableMaterials', JSON.stringify(availableMaterials));
+
+        try {
+            const response = await fetch('http://localhost:5000/api/ai/analyze', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                const analysisResults = Array.isArray(data.analysis) ? data.analysis : [data.analysis];
+
+                let matchedItems = analysisResults.map((analysis, index) => {
+                    const matchedRate = rates.find(r => r.material === analysis.material);
+
+                    if (matchedRate && analysis.isMatch === true) {
+                        const isAccepted = GRADE_RANKS[analysis.quality || 'Poor'] >= GRADE_RANKS[matchedRate.minGrade || 'Poor'];
+
+                        return {
+                            ...matchedRate,
+                            quality: analysis.quality,
+                            reason: analysis.reason,
+                            detectedWeight: '', // User will input this
+                            confidence: analysis.confidence,
+                            isMatch: true,
+                            isAccepted: isAccepted,
+                            minRequiredGrade: matchedRate.minGrade || 'Poor'
+                        };
+                    } else {
+                        return {
+                            material: analysis.material || 'Non-Recyclable Item',
+                            quality: analysis.quality || 'N/A',
+                            reason: analysis.reason || 'Not identified as a standard recyclable material.',
+                            detectedWeight: 0,
+                            price: 0,
+                            unit: 'kg',
+                            confidence: analysis.confidence || 0,
+                            isMatch: false,
+                            isAccepted: false
+                        };
+                    }
+                });
+
+                setDetectedItems(matchedItems);
+            } else {
+                alert(data.message || 'Analysis failed');
+            }
+        } catch (error) {
+            console.error('Analysis Error:', error);
+            alert('Failed to connect to AI service');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleWeightChange = (index, value) => {
+        const updatedItems = [...detectedItems];
+        updatedItems[index].detectedWeight = value;
+        setDetectedItems(updatedItems);
     };
 
     const calculateTotal = () => {
         if (mode === 'ai') {
-            return detectedItems.reduce((acc, item) => acc + (item.price * item.detectedWeight), 0).toFixed(0);
+            return detectedItems
+                .filter(item => item.isAccepted)
+                .reduce((acc, item) => acc + (item.price * parseFloat(item.detectedWeight || 0)), 0)
+                .toFixed(0);
         } else {
             const rate = rates.find(r => r.id === manualData.materialId);
             return rate ? (rate.price * parseFloat(manualData.weight || 0)).toFixed(0) : 0;
@@ -79,19 +142,26 @@ const UploadScrap = () => {
 
         const selectedRate = rates.find(r => r.id === manualData.materialId);
 
+        const acceptedItems = mode === 'ai' ? detectedItems.filter(item => item.isAccepted) : [{
+            ...selectedRate,
+            weight: manualData.weight
+        }];
+
         const orderData = {
             userId: currentUser?.id,
             customerName: currentUser?.name || "Guest User",
+            customerPhone: phoneNumber,
             paymentMethod,
             paymentDetails: paymentMethod === 'online' ? paymentDetails : null,
             amount: calculateTotal(),
-            items: mode === 'ai' ? detectedItems : [{
-                ...selectedRate,
-                weight: manualData.weight
-            }],
+            items: acceptedItems,
             // For simple display in admin table
-            materialName: mode === 'ai' ? detectedItems[0]?.material : selectedRate?.material,
-            weight: mode === 'ai' ? detectedItems[0]?.detectedWeight : manualData.weight
+            materialName: mode === 'ai' 
+                ? (acceptedItems.length > 1 ? `Mixed Scrap (${acceptedItems.length} items)` : acceptedItems[0]?.material)
+                : (rates.find(r => r.id === manualData.materialId)?.material || "Unknown"),
+            weight: mode === 'ai'
+                ? acceptedItems.reduce((sum, item) => sum + parseFloat(item.detectedWeight || 0), 0)
+                : manualData.weight
         };
 
         const result = await addOrder(orderData);
@@ -141,36 +211,16 @@ const UploadScrap = () => {
                         <div className="p-8">
                             {mode === 'ai' ? (
                                 <div className="space-y-6">
-                                    {/* Material and Weight Selection for AI */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Select Material</label>
-                                            <select
-                                                className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-gray-50"
-                                                value={aiMaterialId}
-                                                onChange={(e) => {
-                                                    setAiMaterialId(e.target.value);
-                                                    setDetectedItems([]); // Reset results if material changes
-                                                }}
-                                            >
-                                                <option value="">-- Choose Material --</option>
-                                                {rates.map(r => (
-                                                    <option key={r.id} value={r.id}>{r.material}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Weight (kg/qty)</label>
-                                            <input
-                                                type="number"
-                                                className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-gray-50"
-                                                placeholder="e.g. 5 (Optional)"
-                                                value={aiWeight}
-                                                onChange={(e) => {
-                                                    setAiWeight(e.target.value);
-                                                    setDetectedItems([]); // Reset results if weight changes
-                                                }}
-                                            />
+                                    {/* AI Intelligence Info Box */}
+                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 shadow-sm transition-all hover:bg-white hover:border-primary/30">
+                                        <div className="flex flex-col md:flex-row items-center gap-4">
+                                            <div className="p-3 bg-white rounded-full shadow-sm">
+                                                <FaMagic className="text-2xl text-primary animate-pulse" />
+                                            </div>
+                                            <div className="flex-1 text-center md:text-left">
+                                                <p className="font-bold text-secondary mb-1 text-lg">AI Smart Analysis</p>
+                                                <p className="text-gray-600 leading-relaxed italic">Upload a photo of your scrap, and our AI will automatically identify the material and its quality grade for you.</p>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -198,43 +248,106 @@ const UploadScrap = () => {
                                     {image && !detectedItems.length && (
                                         <button
                                             onClick={handleAnalyze}
-                                            disabled={loading || !aiMaterialId}
+                                            disabled={loading}
                                             className="w-full py-4 bg-secondary text-white rounded-xl font-bold hover:bg-secondary/90 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            {loading ? 'Analyzing...' : <><FaMagic /> Analyze Quality</>}
+                                            {loading ? 'Analyzing Content...' : <><FaMagic /> Identify Material & Quality</>}
                                         </button>
                                     )}
 
                                     {detectedItems.length > 0 && (
                                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                             <h3 className="font-bold text-lg text-secondary mb-3">Detected Items</h3>
-                                            <div className="bg-green-50 border border-green-100 rounded-xl p-4 mb-6">
+                                            <div className={`rounded-xl p-4 mb-6 border ${detectedItems.some(item => item.isMatch === false || item.isAccepted === false)
+                                                    ? 'bg-red-50 border-red-200'
+                                                    : 'bg-green-50 border-green-100'
+                                                }`}>
                                                 {detectedItems.map((item, idx) => (
-                                                    <div key={idx} className="flex justify-between items-center">
-                                                        <div>
-                                                            <p className="font-bold text-gray-800">{item.material}</p>
-                                                            <div className="flex gap-2 items-center mt-1">
-                                                                <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded-full">{item.quality}</span>
-                                                                <p className="text-sm text-gray-500">{item.detectedWeight} {item.unit} @ {item.price} PKR</p>
+                                                    <div key={idx} className="flex flex-col gap-3">
+                                                        <div className="flex justify-between items-center">
+                                                            <div className={(item.isMatch === false || item.isAccepted === false) ? 'opacity-80' : ''}>
+                                                                <p className="font-bold text-gray-800 text-lg">
+                                                                    {item.material}
+                                                                    {item.isMatch && <span className="text-sm font-normal text-gray-500 ml-2">({item.price} PKR / {item.unit})</span>}
+                                                                </p>
+                                                                <div className="flex gap-2 items-center mt-1">
+                                                                    <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${item.isMatch === false ? 'bg-gray-200 text-gray-500' : 'bg-primary/10 text-primary'
+                                                                        }`}>{item.quality}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <p className={`text-sm font-bold flex items-center justify-end gap-1 ${(item.isMatch === false || item.isAccepted === false) ? 'text-red-500' : 'text-green-600'
+                                                                    }`}>
+                                                                    {(item.isMatch === false || item.isAccepted === false) ? <FaCamera /> : <FaCheckCircle />} {item.confidence}% Confidence
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <div className="text-right">
-                                                            <p className="font-bold text-primary text-xl">
-                                                                {(item.price * item.detectedWeight).toFixed(0)} PKR
-                                                            </p>
-                                                            <p className="text-xs text-green-600 font-bold flex items-center justify-end gap-1">
-                                                                <FaCheckCircle /> {item.confidence}% Confidence
-                                                            </p>
+
+                                                        <div className="bg-white/50 rounded-lg p-3 text-sm border border-gray-100 divide-y divide-gray-100">
+                                                            <p className="text-gray-600 italic font-medium select-none pb-2">" {item.reason} "</p>
+                                                            
+                                                            {item.isAccepted && (
+                                                                <div className="pt-3 flex flex-col gap-3">
+                                                                    <div className="flex items-center justify-between gap-4">
+                                                                        <div className="flex-1">
+                                                                            <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block mb-1">Quantity/Weight ({item.unit})</label>
+                                                                            <input 
+                                                                                type="number"
+                                                                                placeholder="0.0"
+                                                                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                                                                value={item.detectedWeight}
+                                                                                onChange={(e) => handleWeightChange(idx, e.target.value)}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="text-right">
+                                                                            <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block mb-1">Estimated Value</label>
+                                                                            <p className="text-primary font-black text-lg">
+                                                                                {(parseFloat(item.detectedWeight || 0) * item.price).toFixed(0)} PKR
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
+
+                                                        {item.isMatch === true && item.isAccepted === false && (
+                                                            <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-lg text-sm font-bold border border-amber-200 flex items-center gap-2 shadow-sm">
+                                                                <FaMagic className="animate-pulse" />
+                                                                Quality Too Low: {item.material} must be at least {item.minRequiredGrade} to be accepted.
+                                                            </div>
+                                                        )}
+
+                                                        {item.isMatch === false && (
+                                                            <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold border border-red-700 flex items-center gap-2 shadow-sm">
+                                                                <FaMagic className="animate-pulse" />
+                                                                Analysis Mismatch: This does not appear to be {item.material}.
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ))}
                                             </div>
                                             <button
                                                 onClick={() => setStep(2)}
-                                                className="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/30"
+                                                disabled={
+                                                    !detectedItems.some(item => item.isAccepted) || 
+                                                    detectedItems.filter(item => item.isAccepted).some(item => !item.detectedWeight || parseFloat(item.detectedWeight) <= 0)
+                                                }
+                                                className="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed"
                                             >
-                                                Proceed to Payment
+                                                {!detectedItems.some(item => item.isAccepted)
+                                                    ? 'No Accepted Items Found'
+                                                    : detectedItems.filter(item => item.isAccepted).some(item => !item.detectedWeight || parseFloat(item.detectedWeight) <= 0)
+                                                        ? 'Please Enter All Weights'
+                                                        : detectedItems.some(item => !item.isAccepted)
+                                                            ? 'Proceed with Accepted Items Only'
+                                                            : 'Proceed to Payment'
+                                                }
                                             </button>
+                                            {detectedItems.some(item => !item.isAccepted) && detectedItems.some(item => item.isAccepted) && (
+                                                <p className="text-center text-xs text-amber-600 font-medium mt-3 animate-pulse">
+                                                    ⚠️ Note: Rejected items will be automatically removed from this order.
+                                                </p>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -344,11 +457,28 @@ const UploadScrap = () => {
                                     </div>
                                 )}
 
+                                <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 mt-4">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                                        Confirm Phone Number for Rider
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        required
+                                        placeholder="e.g. 0300-1234567"
+                                        className="w-full p-4 rounded-xl border border-gray-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none bg-white font-bold transition-all"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                    />
+                                    <p className="text-[10px] text-gray-400 mt-2 italic">Rider will use this number to coordinate collection.</p>
+                                </div>
+
                                 <button
                                     type="submit"
-                                    className="w-full py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-600/30 text-lg"
+                                    disabled={loading || !phoneNumber}
+                                    className="w-full py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-600/30 text-lg disabled:bg-gray-300 disabled:shadow-none"
                                 >
-                                    Confirm & Sell Scrap
+                                    {loading ? 'Submitting...' : 'Confirm & Sell Scrap'}
                                 </button>
                             </form>
                         </div>
