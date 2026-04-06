@@ -180,119 +180,115 @@ const ManageUsers = () => {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-secondary/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
                     <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 animate-in fade-in zoom-in duration-300 relative">
+                        {/* Close Button */}
                         <button 
                             onClick={() => setIsModalOpen(false)}
-                            className="absolute top-6 right-6 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
+                            className="absolute top-6 right-6 w-11 h-11 bg-white/50 backdrop-blur-md rounded-2xl flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300 z-10 border border-white/20 group"
                         >
-                            <FaTimes />
+                            <FaTimes className="group-hover:rotate-180 transition-transform duration-500" />
                         </button>
 
-                        <div className="text-center mb-8">
-                            <div className="w-20 h-20 bg-primary/10 text-primary rounded-[2rem] flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner tracking-tighter">
-                                {editMode ? <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
-                                </svg> : <FaUserPlus />}
+                        {/* Styled Header Section */}
+                        <div className="text-center relative mb-10 pt-4">
+                            <div className="relative inline-block mb-6">
+                                <div className="absolute inset-0 bg-primary/30 rounded-[2.5rem] blur-2xl animate-pulse delay-700"></div>
+                                <div className="w-24 h-24 bg-gradient-to-br from-primary via-primary-dark to-secondary text-white rounded-[2.5rem] flex items-center justify-center text-5xl relative z-10 shadow-2xl shadow-primary/40 rotate-3 hover:rotate-0 transition-transform duration-500 ring-8 ring-white/80">
+                                    {editMode ? <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                    </svg> : <FaUserPlus className="text-white/90" />}
+                                </div>
                             </div>
-                            <h2 className="text-3xl font-black text-secondary tracking-tight">{editMode ? 'Edit User' : 'New Customer'}</h2>
-                            <p className="text-gray-500 font-medium">{editMode ? 'Update account details.' : 'Manually create a new customer account.'}</p>
+                            <h2 className="text-4xl font-black text-secondary tracking-tight mb-2">{editMode ? 'Edit User' : 'New Customer'}</h2>
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="h-1 w-8 bg-primary/20 rounded-full"></div>
+                                <p className="text-gray-500 font-bold text-sm tracking-wide uppercase italic">{editMode ? 'Update Security & Profile' : 'Direct Merchant Onboarding'}</p>
+                                <div className="h-1 w-8 bg-primary/20 rounded-full"></div>
+                            </div>
                         </div>
 
+                        {/* Feedback Alerts */}
                         {error && (
-                            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm font-bold flex items-center gap-3 rounded-r-xl">
-                                <FaTimes className="shrink-0" />
-                                {error}
+                            <div className="mb-8 p-4 bg-red-50/50 backdrop-blur-sm border border-red-100 text-red-600 text-xs font-black flex items-center gap-4 rounded-2xl animate-in slide-in-from-top-2">
+                                <div className="w-8 h-8 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20">
+                                    <FaTimes size={14} />
+                                </div>
+                                <span>{error}</span>
                             </div>
                         )}
 
                         {success && (
-                            <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 text-sm font-bold flex items-center gap-3 rounded-r-xl">
-                                <FaCheckDouble className="shrink-0" />
-                                {success}
+                            <div className="mb-8 p-4 bg-emerald-50/50 backdrop-blur-sm border border-emerald-100 text-emerald-600 text-xs font-black flex items-center gap-4 rounded-2xl animate-in slide-in-from-top-2">
+                                <div className="w-8 h-8 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                                    <FaCheckDouble size={14} />
+                                </div>
+                                <span>{success}</span>
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="space-y-1.5">
-                                <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
-                                <div className="relative">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Inputs With Style */}
+                            {[
+                                { label: 'Full Name', name: 'name', icon: <FaUserPlus size={16} />, placeholder: 'e.g. John Doe', type: 'text' },
+                                { label: 'Email Address', name: 'email', icon: <FaEnvelope size={16} />, placeholder: 'customer@email.com', type: 'email' },
+                                { label: 'Phone Number', name: 'phone', icon: <FaPhone size={16} />, placeholder: '0300-0000000', type: 'tel' }
+                            ].map((field) => (
+                                <div key={field.name} className="group/input space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 group-focus-within/input:text-primary transition-colors">{field.label}</label>
+                                    <div className="relative group/field overflow-hidden rounded-2xl shadow-sm border-2 border-gray-50 bg-gray-50 focus-within:border-primary/30 focus-within:bg-white transition-all duration-300">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within/input:text-primary transition-colors">
+                                            {field.icon}
+                                        </div>
+                                        <input
+                                            type={field.type}
+                                            required
+                                            placeholder={field.placeholder}
+                                            className="w-full pl-12 pr-4 py-4 bg-transparent outline-none font-bold text-secondary placeholder:text-gray-300 transition-all"
+                                            value={formData[field.name]}
+                                            onChange={(e) => setFormData({...formData, [field.name]: e.target.value})}
+                                        />
                                     </div>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="e.g. John Doe"
-                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary/20 focus:bg-white focus:outline-none transition-all font-bold text-secondary"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    />
                                 </div>
-                            </div>
+                            ))}
 
-                            <div className="space-y-1.5">
-                                <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
-                                <div className="relative">
-                                    <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
-                                    <input
-                                        type="email"
-                                        required
-                                        placeholder="customer@email.com"
-                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary/20 focus:bg-white focus:outline-none transition-all font-bold text-secondary"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
-                                <div className="relative">
-                                    <FaPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
-                                    <input
-                                        type="tel"
-                                        required
-                                        placeholder="0300-0000000"
-                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary/20 focus:bg-white focus:outline-none transition-all font-bold text-secondary"
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">{editMode ? 'New Password (Optional)' : 'Account Password'}</label>
-                                <div className="relative">
-                                    <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                            {/* Password Field Special Treatment */}
+                            <div className="group/input space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 group-focus-within/input:text-primary transition-colors">{editMode ? 'New Password (Optional)' : 'Account Password'}</label>
+                                <div className="relative group/field overflow-hidden rounded-2xl shadow-sm border-2 border-blue-50/50 bg-blue-50/30 focus-within:border-primary/30 focus-within:bg-white transition-all duration-300">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within/input:text-primary transition-colors">
+                                        <FaLock size={16} />
+                                    </div>
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         required={!editMode}
                                         placeholder="••••••••"
-                                        className="w-full pl-12 pr-12 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-primary/20 focus:bg-white focus:outline-none transition-all font-bold text-secondary"
+                                        className="w-full pl-12 pr-12 py-4 bg-transparent outline-none font-bold text-secondary placeholder:text-gray-300 transition-all font-mono tracking-widest"
                                         value={formData.password}
                                         onChange={(e) => setFormData({...formData, password: e.target.value})}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors focus:outline-none"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-white/80 shadow-sm flex items-center justify-center text-gray-400 hover:text-primary hover:shadow-md transition-all active:scale-90"
                                         title={showPassword ? "Hide password" : "Show password"}
                                     >
-                                        {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                                        {showPassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
                                     </button>
                                 </div>
                                 {editMode && (
-                                    <p className="text-[10px] text-gray-400 italic px-1">Leave blank to keep existing password.</p>
+                                    <p className="text-[10px] text-gray-400 italic px-1 font-medium">Leave blank to keep existing password.</p>
                                 )}
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-5 bg-primary text-white rounded-2xl font-black text-lg hover:bg-primary-dark transition-all shadow-xl shadow-primary/30 active:scale-95 disabled:opacity-50 mt-4"
+                                className="group/btn w-full py-5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-3xl font-black text-lg shadow-xl shadow-primary/40 hover:shadow-2xl hover:shadow-primary/50 hover:-translate-y-1 active:scale-95 transition-all duration-500 disabled:grayscale disabled:opacity-50 mt-6 relative overflow-hidden"
                             >
-                                {loading ? (editMode ? 'Updating...' : 'Creating...') : (editMode ? 'Save Changes' : 'Confirm & Create Account')}
+                                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 skew-x-[-20deg]"></div>
+                                <span className="relative z-10 flex items-center justify-center gap-3">
+                                    {loading ? (editMode ? 'Updating Cloud...' : 'Creating Account...') : (editMode ? 'Save Changes' : 'Confirm & Create Account')}
+                                    {!loading && <FaCheckDouble className="group-hover/btn:translate-x-1 transition-transform" />}
+                                </span>
                             </button>
                         </form>
                     </div>
