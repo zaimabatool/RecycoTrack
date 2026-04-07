@@ -21,6 +21,7 @@ const UploadScrap = () => {
     const [aiMaterialId, setAiMaterialId] = useState(''); // New state for AI mode material
     const [detectedItems, setDetectedItems] = useState([]);
     const [phoneNumber, setPhoneNumber] = useState(currentUser?.phone || '');
+    const [showLimitModal, setShowLimitModal] = useState(false);
 
     const GRADE_RANKS = {
         'Premium': 4,
@@ -109,7 +110,11 @@ const UploadScrap = () => {
 
                 setDetectedItems(matchedItems);
             } else {
-                alert(data.message || 'Analysis failed');
+                if (data.errorCode === 'ALL_KEYS_EXHAUSTED') {
+                    setShowLimitModal(true);
+                } else {
+                    alert(data.message || 'Analysis failed');
+                }
             }
         } catch (error) {
             console.error('Analysis Error:', error);
@@ -522,6 +527,47 @@ const UploadScrap = () => {
                     )}
                 </div>
             </div>
+
+            {/* AI Limit Reached Modal */}
+            {showLimitModal && (
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-secondary/40 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-white/20 animate-in zoom-in-95 duration-300">
+                        <div className="bg-amber-500 p-8 text-center relative">
+                            <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle,white_1px,transparent_1px)] bg-size-[20px_20px]"></div>
+                            <div className="bg-white/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md">
+                                <FaExclamationTriangle className="text-4xl text-white animate-pulse" />
+                            </div>
+                            <h2 className="text-2xl font-black text-white relative z-10">AI Capacity Reached</h2>
+                        </div>
+                        
+                        <div className="p-8 text-center">
+                            <p className="text-gray-600 font-medium leading-relaxed mb-8">
+                                Our smart analysis servers are currently at their peak daily capacity. 🔕 
+                                <br/><br/>
+                                To ensure fairness for all users, AI identification is temporarily paused. You can still sell your scrap by using our <strong>Manual Entry</strong> mode!
+                            </p>
+                            
+                            <div className="flex flex-col gap-3">
+                                <button 
+                                    onClick={() => {
+                                        setMode('manual');
+                                        setShowLimitModal(false);
+                                    }}
+                                    className="w-full py-4 bg-primary text-white rounded-xl font-black hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                                >
+                                    <FaMagic /> Switch to Manual Entry
+                                </button>
+                                <button 
+                                    onClick={() => setShowLimitModal(false)}
+                                    className="w-full py-4 bg-gray-50 text-gray-500 rounded-xl font-bold hover:bg-gray-100 transition-all"
+                                >
+                                    I'll Try Later
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
