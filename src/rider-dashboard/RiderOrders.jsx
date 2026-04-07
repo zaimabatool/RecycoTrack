@@ -62,7 +62,7 @@ const RiderOrders = () => {
                                         <div>
                                             <h3 className="text-lg font-bold text-gray-800">{order.customerName || 'Customer'}</h3>
                                             <p className="text-sm text-gray-500 flex items-center gap-1">
-                                                <FaMapMarkerAlt className="text-red-400" /> Collection address not specified
+                                                <FaMapMarkerAlt className="text-red-400" /> {order.address || 'Address not specified'}
                                             </p>
                                         </div>
 
@@ -221,7 +221,9 @@ const RiderOrders = () => {
                                     <h4 className="font-bold text-secondary flex items-center gap-2 pb-2 border-b border-primary/20">
                                         <FaMapMarkerAlt className="text-primary" /> Location Info
                                     </h4>
-                                    <p className="text-gray-600 text-sm font-medium italic">Collection address will be provided by admin.</p>
+                                    <p className="text-gray-800 text-sm font-bold bg-white p-3 rounded-xl border border-primary/10 shadow-sm leading-relaxed">
+                                        {viewOrder.address || 'Address not provided'}
+                                    </p>
                                     <a 
                                         href={`tel:${viewOrder.customerPhone}`}
                                         className="w-full py-3 bg-white border border-primary/20 rounded-xl text-primary font-bold flex items-center justify-center gap-2 text-sm hover:bg-primary hover:text-white transition-all shadow-sm"

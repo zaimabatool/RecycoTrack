@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { FaCloudUploadAlt, FaCamera, FaMagic, FaCheckCircle, FaMoneyBillWave, FaCreditCard } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaCamera, FaMagic, FaCheckCircle, FaMoneyBillWave, FaCreditCard, FaTimesCircle, FaExclamationTriangle, FaClock, FaArrowRight } from 'react-icons/fa';
 
 const UploadScrap = () => {
     const navigate = useNavigate();
@@ -39,6 +39,7 @@ const UploadScrap = () => {
 
     // Payment State
     const [paymentMethod, setPaymentMethod] = useState('cash'); // 'cash' or 'online'
+    const [address, setAddress] = useState(currentUser?.address || '');
     const [paymentDetails, setPaymentDetails] = useState({
         accountNumber: '',
         accountName: ''
@@ -151,6 +152,7 @@ const UploadScrap = () => {
             userId: currentUser?.id,
             customerName: currentUser?.name || "Guest User",
             customerPhone: phoneNumber,
+            address,
             paymentMethod,
             paymentDetails: paymentMethod === 'online' ? paymentDetails : null,
             amount: calculateTotal(),
@@ -253,101 +255,121 @@ const UploadScrap = () => {
                                         >
                                             {loading ? 'Analyzing Content...' : <><FaMagic /> Identify Material & Quality</>}
                                         </button>
-                                    )}
-
-                                    {detectedItems.length > 0 && (
+                                    )}                                    {detectedItems.length > 0 && (
                                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                            <h3 className="font-bold text-lg text-secondary mb-3">Detected Items</h3>
-                                            <div className={`rounded-xl p-4 mb-6 border ${detectedItems.some(item => item.isMatch === false || item.isAccepted === false)
-                                                    ? 'bg-red-50 border-red-200'
-                                                    : 'bg-green-50 border-green-100'
-                                                }`}>
-                                                {detectedItems.map((item, idx) => (
-                                                    <div key={idx} className="flex flex-col gap-3">
-                                                        <div className="flex justify-between items-center">
-                                                            <div className={(item.isMatch === false || item.isAccepted === false) ? 'opacity-80' : ''}>
-                                                                <p className="font-bold text-gray-800 text-lg">
-                                                                    {item.material}
-                                                                    {item.isMatch && <span className="text-sm font-normal text-gray-500 ml-2">({item.price} PKR / {item.unit})</span>}
-                                                                </p>
-                                                                <div className="flex gap-2 items-center mt-1">
-                                                                    <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${item.isMatch === false ? 'bg-gray-200 text-gray-500' : 'bg-primary/10 text-primary'
-                                                                        }`}>{item.quality}</span>
+                                            <h3 className="font-bold text-lg text-secondary mb-4 flex items-center gap-2">
+                                                <div className="p-1.5 bg-primary/10 rounded-lg text-primary"><FaMagic /></div>
+                                                Detected Items
+                                            </h3>
+                                            
+                                            <div className="space-y-4 mb-8">
+                                                {detectedItems.map((item, idx) => {
+                                                    const isMatch = item.isMatch !== false;
+                                                    const isAccepted = item.isAccepted !== false;
+                                                    
+                                                    return (
+                                                        <div key={idx} className={`p-6 rounded-2xl border-2 transition-all shadow-sm ${
+                                                            isMatch && isAccepted 
+                                                                ? 'bg-white border-green-100 hover:border-green-200' 
+                                                                : 'bg-gray-50/50 border-red-100 opacity-90'
+                                                        }`}>
+                                                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2 flex-wrap mb-2">
+                                                                        <h4 className={`text-xl font-black ${isMatch && isAccepted ? 'text-gray-800' : 'text-gray-500 line-through'}`}>
+                                                                            {item.material}
+                                                                        </h4>
+                                                                        {isMatch && isAccepted ? (
+                                                                            <span className="bg-green-100 text-green-700 text-[10px] uppercase font-black px-2 py-1 rounded-md tracking-wider flex items-center gap-1">
+                                                                                <FaCheckCircle className="text-xs" /> Verified Match
+                                                                            </span>
+                                                                        ) : (
+                                                                            <span className="bg-red-100 text-red-700 text-[10px] uppercase font-black px-2 py-1 rounded-md tracking-wider flex items-center gap-1">
+                                                                                <FaTimesCircle className="text-xs" /> Analysis Mismatch
+                                                                            </span>
+                                                                        )}
+                                                                        {isMatch && isAccepted && (
+                                                                            <span className="bg-primary/5 text-primary text-[10px] font-bold px-2 py-1 rounded-md">
+                                                                                {item.quality}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className={`text-sm italic italic leading-relaxed ${isMatch && isAccepted ? 'text-gray-600' : 'text-gray-400'}`}>
+                                                                        " {item.reason} "
+                                                                    </p>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <p className={`text-sm font-black flex items-center justify-end gap-1 ${isMatch && isAccepted ? 'text-green-600' : 'text-red-400'}`}>
+                                                                        {isMatch && isAccepted ? <FaCheckCircle /> : <FaExclamationTriangle />} {item.confidence}% Confidence
+                                                                    </p>
+                                                                    {isMatch && isAccepted && (
+                                                                        <p className="text-xs text-gray-400 mt-1">Rate: {item.price} PKR/{item.unit}</p>
+                                                                    )}
                                                                 </div>
                                                             </div>
-                                                            <div className="text-right">
-                                                                <p className={`text-sm font-bold flex items-center justify-end gap-1 ${(item.isMatch === false || item.isAccepted === false) ? 'text-red-500' : 'text-green-600'
-                                                                    }`}>
-                                                                    {(item.isMatch === false || item.isAccepted === false) ? <FaCamera /> : <FaCheckCircle />} {item.confidence}% Confidence
-                                                                </p>
-                                                            </div>
-                                                        </div>
 
-                                                        <div className="bg-white/50 rounded-lg p-3 text-sm border border-gray-100 divide-y divide-gray-100">
-                                                            <p className="text-gray-600 italic font-medium select-none pb-2">" {item.reason} "</p>
-                                                            
-                                                            {item.isAccepted && (
-                                                                <div className="pt-3 flex flex-col gap-3">
-                                                                    <div className="flex items-center justify-between gap-4">
-                                                                        <div className="flex-1">
-                                                                            <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block mb-1">Quantity/Weight ({item.unit})</label>
-                                                                            <input 
-                                                                                type="number"
-                                                                                placeholder="0.0"
-                                                                                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                                                                                value={item.detectedWeight}
-                                                                                onChange={(e) => handleWeightChange(idx, e.target.value)}
-                                                                            />
+                                                            {isMatch && isAccepted ? (
+                                                                <div className="mt-6 pt-6 border-t border-gray-100">
+                                                                    <div className="flex flex-col md:flex-row items-end md:items-center justify-between gap-4">
+                                                                        <div className="w-full md:w-auto flex-1">
+                                                                            <label className="text-[10px] uppercase tracking-widest font-black text-gray-400 block mb-2 px-1">
+                                                                                Quantity / Estimated Weight ({item.unit})
+                                                                            </label>
+                                                                            <div className="relative group max-w-xs">
+                                                                                <input 
+                                                                                    type="number"
+                                                                                    placeholder="0.0"
+                                                                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-lg font-black focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all shadow-inner group-hover:border-primary/30"
+                                                                                    value={item.detectedWeight}
+                                                                                    onChange={(e) => handleWeightChange(idx, e.target.value)}
+                                                                                />
+                                                                                <span className="absolute right-4 top-1/2 -translate-y-1/2 font-black text-gray-300 pointer-events-none">{item.unit.toUpperCase()}</span>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="text-right">
-                                                                            <label className="text-[10px] uppercase tracking-wider font-bold text-gray-400 block mb-1">Estimated Value</label>
-                                                                            <p className="text-primary font-black text-lg">
-                                                                                {(parseFloat(item.detectedWeight || 0) * item.price).toFixed(0)} PKR
+                                                                        <div className="text-right bg-primary/5 p-4 rounded-2xl border border-primary/10 min-w-[160px] animate-in zoom-in slide-in-from-right-4 duration-300">
+                                                                            <label className="text-[10px] uppercase tracking-widest font-black text-primary block mb-1">Estimated Value</label>
+                                                                            <p className="text-secondary font-black text-2xl flex items-center justify-end gap-2">
+                                                                                {(parseFloat(item.detectedWeight || 0) * item.price).toFixed(0)} <span className="text-sm font-bold opacity-50">PKR</span>
                                                                             </p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                            ) : (
+                                                                <div className="mt-4 flex items-center gap-2 text-xs font-bold text-red-500 bg-red-100/50 p-3 rounded-xl border border-red-100">
+                                                                    <FaExclamationTriangle className="animate-pulse" />
+                                                                    This item did not match the criteria and will be excluded from the order.
+                                                                </div>
                                                             )}
                                                         </div>
-
-                                                        {item.isMatch === true && item.isAccepted === false && (
-                                                            <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-lg text-sm font-bold border border-amber-200 flex items-center gap-2 shadow-sm">
-                                                                <FaMagic className="animate-pulse" />
-                                                                Quality Too Low: {item.material} must be at least {item.minRequiredGrade} to be accepted.
-                                                            </div>
-                                                        )}
-
-                                                        {item.isMatch === false && (
-                                                            <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold border border-red-700 flex items-center gap-2 shadow-sm">
-                                                                <FaMagic className="animate-pulse" />
-                                                                Analysis Mismatch: This does not appear to be {item.material}.
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
+                                                    )
+                                                })}
                                             </div>
-                                            <button
-                                                onClick={() => setStep(2)}
-                                                disabled={
-                                                    !detectedItems.some(item => item.isAccepted) || 
-                                                    detectedItems.filter(item => item.isAccepted).some(item => !item.detectedWeight || parseFloat(item.detectedWeight) <= 0)
-                                                }
-                                                className="w-full py-4 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed"
-                                            >
-                                                {!detectedItems.some(item => item.isAccepted)
-                                                    ? 'No Accepted Items Found'
-                                                    : detectedItems.filter(item => item.isAccepted).some(item => !item.detectedWeight || parseFloat(item.detectedWeight) <= 0)
-                                                        ? 'Please Enter All Weights'
-                                                        : detectedItems.some(item => !item.isAccepted)
-                                                            ? 'Proceed with Accepted Items Only'
-                                                            : 'Proceed to Payment'
-                                                }
-                                            </button>
-                                            {detectedItems.some(item => !item.isAccepted) && detectedItems.some(item => item.isAccepted) && (
-                                                <p className="text-center text-xs text-amber-600 font-medium mt-3 animate-pulse">
-                                                    ⚠️ Note: Rejected items will be automatically removed from this order.
-                                                </p>
-                                            )}
+
+                                            <div className="space-y-4">
+                                                <button
+                                                    onClick={() => setStep(2)}
+                                                    disabled={
+                                                        !detectedItems.some(item => item.isAccepted) || 
+                                                        detectedItems.filter(item => item.isAccepted).some(item => !item.detectedWeight || parseFloat(item.detectedWeight) <= 0)
+                                                    }
+                                                    className="w-full py-5 bg-green-600 text-white rounded-2xl font-black hover:bg-green-700 transition-all shadow-xl shadow-green-600/20 text-lg disabled:bg-gray-200 disabled:shadow-none disabled:cursor-not-allowed group"
+                                                >
+                                                    {!detectedItems.some(item => item.isAccepted)
+                                                        ? 'No Valid Items Detected'
+                                                        : detectedItems.filter(item => item.isAccepted).some(item => !item.detectedWeight || parseFloat(item.detectedWeight) <= 0)
+                                                            ? 'Please Enter Valid Weight'
+                                                            : detectedItems.some(item => !item.isAccepted)
+                                                                ? <span className="flex items-center justify-center gap-2">Proceed with Accepted Items Only <FaArrowRight className="group-hover:translate-x-1 transition-transform" /></span>
+                                                                : <span className="flex items-center justify-center gap-2">Proceed to Payment <FaArrowRight className="group-hover:translate-x-1 transition-transform" /></span>
+                                                    }
+                                                </button>
+                                                
+                                                {detectedItems.some(item => !item.isAccepted) && detectedItems.some(item => item.isAccepted) && (
+                                                    <div className="flex items-center justify-center gap-2 text-xs text-amber-600 font-bold bg-amber-50 py-3 px-4 rounded-xl border border-amber-100 animate-pulse">
+                                                        <FaClock /> Note: Rejected items (grayed out) will be automatically removed from this order.
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -458,7 +480,7 @@ const UploadScrap = () => {
                                 )}
 
                                 <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 mt-4">
-                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                    <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
                                         Confirm Phone Number for Rider
                                     </label>
@@ -473,9 +495,24 @@ const UploadScrap = () => {
                                     <p className="text-[10px] text-gray-400 mt-2 italic">Rider will use this number to coordinate collection.</p>
                                 </div>
 
+                                <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                                    <label className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                                        Pickup Address
+                                    </label>
+                                    <textarea
+                                        required
+                                        placeholder="Enter your complete pickup address..."
+                                        className="w-full p-4 rounded-xl border border-gray-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none bg-white font-bold transition-all min-h-[100px]"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                    />
+                                    <p className="text-[10px] text-gray-400 mt-2 italic">Please provide full address details (House #, Street, Area).</p>
+                                </div>
+
                                 <button
                                     type="submit"
-                                    disabled={loading || !phoneNumber}
+                                    disabled={loading || !phoneNumber || !address}
                                     className="w-full py-4 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg shadow-green-600/30 text-lg disabled:bg-gray-300 disabled:shadow-none"
                                 >
                                     {loading ? 'Submitting...' : 'Confirm & Sell Scrap'}

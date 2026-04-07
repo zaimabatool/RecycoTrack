@@ -305,6 +305,15 @@ const Orders = () => {
                                     </div>
                                 </div>
 
+                                <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                                    <p className="text-[10px] uppercase font-bold text-amber-500 tracking-wider mb-1 flex items-center gap-1">
+                                        Pickup Address
+                                    </p>
+                                    <p className="font-bold text-gray-800 text-sm leading-relaxed">
+                                        {viewOrder.address || 'No address provided'}
+                                    </p>
+                                </div>
+
                                 <div className="border-t border-gray-100 pt-4">
                                     <h4 className="font-bold text-gray-700 mb-2">Items</h4>
                                     {viewOrder.items && viewOrder.items.map((item, idx) => (
